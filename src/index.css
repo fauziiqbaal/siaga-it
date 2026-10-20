@@ -1,0 +1,227 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Warm Slate Canvas — eliminates screen glare ("silau") */
+    --background: 215 28% 95%; /* #eff3f8 soft warm slate */
+    --foreground: 222 47% 11%; /* #0f172a deep rich charcoal */
+
+    /* Pure white cards pop cleanly over soft slate canvas */
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --primary: 221 83% 48%; /* Deep vibrant royal blue */
+    --primary-foreground: 0 0% 100%;
+
+    --muted: 215 22% 89%; /* #dbe2ec defined muted surfaces */
+    --muted-foreground: 215 25% 30%; /* #3a4759 high-contrast readable dark slate */
+
+    --border: 215 20% 82%; /* #c8d2df crisp, clearly defined borders */
+    --input: 215 20% 80%;
+    --ring: 221 83% 48%;
+  }
+
+  .dark {
+    --background: 240 10% 4%; /* #09090b Zinc 950 */
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 6%; /* #0f0f12 Zinc 900 */
+    --card-foreground: 0 0% 98%;
+
+    --primary: 217 91% 60%; /* Clean Sky/Blue */
+    --primary-foreground: 0 0% 100%;
+
+    --muted: 240 4% 14%;
+    --muted-foreground: 240 5% 65%;
+
+    --border: 240 4% 18%; /* Clean subtle border */
+    --input: 240 4% 18%;
+    --ring: 217 91% 60%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+}
+
+/* Clean compact scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(120, 120, 130, 0.25);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 120, 130, 0.4);
+}
+
+/* Remove number input spin arrows for compact mobile displays */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Optimize touch interactions on mobile devices */
+button, input, select {
+  touch-action: manipulation;
+}
+
+/* ========================================================= */
+/* ========================================================= */
+/* BULLETPROOF PRINT STYLES FOR OFFICIAL IT REPORTS (A4 & A3) */
+/* ========================================================= */
+@media print {
+  @page {
+    margin: 8mm 8mm 10mm 8mm;
+  }
+
+  /* Force pure white background and deep dark ink text */
+  html, body, #root {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    font-size: 9pt !important;
+    line-height: 1.25 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Override dark mode variables during printing */
+  :root, .dark {
+    --background: 0 0% 100% !important;
+    --foreground: 222 47% 11% !important; /* #0f172a */
+    --card: 0 0% 100% !important;
+    --card-foreground: 222 47% 11% !important;
+    --muted: 210 40% 96% !important;
+    --muted-foreground: 215 25% 25% !important; /* #2d3748 */
+    --border: 214 32% 80% !important; /* #cbd5e1 */
+  }
+
+  /* Completely hide all navigation, menus, and interactive triggers */
+  header,
+  nav,
+  aside,
+  .print\:hidden,
+  button:not(.print\:show) {
+    display: none !important;
+  }
+
+  /* Main content should take full width without sidebar margin */
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Page break controls */
+  .print-page-break-before,
+  .print\:break-before-page {
+    break-before: page !important;
+    page-break-before: always !important;
+  }
+
+  .print-page-break-after,
+  .print\:break-after-page {
+    break-after: page !important;
+    page-break-after: always !important;
+  }
+
+  /* Prevent page breaks across atomic individual cards and rows */
+  .break-inside-avoid,
+  .print-avoid-break,
+  .print\:break-inside-avoid {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Allow containers with multiple items to break cleanly between rows */
+  .print-allow-break,
+  .print\:break-inside-auto {
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  /* Ensure SVG vectors and images are never cropped or cut off */
+  svg {
+    overflow: visible !important;
+  }
+
+  img {
+    max-width: 100% !important;
+    object-fit: contain !important;
+  }
+
+  /* Ensure scrollable or clipping containers expand cleanly without clipping or bottom cut-offs */
+  body, #root, main,
+  .overflow-y-auto,
+  .overflow-x-auto,
+  .overflow-hidden,
+  .overflow-x-hidden {
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  /* High-contrast borders on printed paper */
+  .border,
+  .border-border {
+    border-color: #94a3b8 !important; /* Slate 400 - clean and clearly defined */
+  }
+
+  /* High-contrast readable text for secondary/muted copy */
+  .text-muted-foreground {
+    color: #334155 !important; /* Slate 700 - sharp and crisp on white paper */
+  }
+
+  .text-foreground {
+    color: #0f172a !important; /* Slate 900 - maximum contrast */
+  }
+
+  /* Clean solid background on cards */
+  .bg-card {
+    background-color: #ffffff !important;
+  }
+
+  /* Fix high contrast for issue / snag boxes */
+  .print-issue-box {
+    background-color: #fff1f2 !important; /* soft red */
+    border-color: #ef4444 !important; /* crisp red */
+    color: #881337 !important; /* deep dark red */
+  }
+
+  /* Print typography and spacing scaling */
+  h1, h2, h3, h4, p, span {
+    text-rendering: optimizeLegibility;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+}
