@@ -555,7 +555,7 @@ export const EvidenceCaptureModal: React.FC<EvidenceCaptureModalProps> = ({
 
         {/* Full Image Viewer Zoom Overlay */}
         {viewingItem && (
-          <div className="fixed inset-0 z-60 bg-black/90 flex flex-col items-center justify-center p-4">
+          <div className="fixed inset-0 z-[60] bg-black/90 flex flex-col items-center justify-center p-4">
             <button
               onClick={() => setViewingItem(null)}
               className="absolute top-4 right-4 p-2 rounded-full bg-zinc-800 text-white hover:bg-zinc-700"

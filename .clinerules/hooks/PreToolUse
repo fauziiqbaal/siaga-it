@@ -1,0 +1,271 @@
+#!/usr/bin/env node
+/*
+ * PreToolUse hook — penegak .clineignore (port Node dari
+ * cline/sdk/examples/hooks/PreToolUse_ClineignoreGuard.sh, tanpa jq/git).
+ *
+ * Memblokir read_files / editor / apply_patch / run_commands yang menyentuh path
+ * yang cocok dengan pola .clineignore di root workspace.
+ *
+ * Payload yang didukung (dua bentuk):
+ *   - VS Code extension : { preToolUse: { toolName, parameters }, workspaceRoots: [...] }
+ *   - CLI / SDK         : { tool_call: { name, input }, workspaceRoots: [...] }
+ *
+ * Output: {"cancel":false} bila lolos, {"cancel":true,"errorMessage":"..."} bila diblokir.
+ * Selalu fail-open: error apa pun -> tool call dibiarkan jalan.
+ *
+ * Uji cepat: node .clinerules/hooks/PreToolUse --self-test
+ */
+'use strict';
+
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+
+function out(obj) {
+  process.stdout.write(JSON.stringify(obj) + '\n');
+  process.exit(0);
+}
+function allow() {
+  out({ cancel: false });
+}
+function block(errorMessage) {
+  out({ cancel: true, errorMessage });
+}
+
+function dejson(value) {
+  if (typeof value !== 'string') return value;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
+  }
+}
+// ---------- .clineignore -> matcher ----------
+function compilePattern(raw) {
+  let pattern = String(raw).trim();
+  if (!pattern || pattern.startsWith('#')) return null;
+  let negate = false;
+  if (pattern.startsWith('!')) {
+    negate = true;
+    pattern = pattern.slice(1).trim();
+  }
+  let dirOnly = false;
+  if (pattern.endsWith('/')) {
+    dirOnly = true;
+    pattern = pattern.replace(/\/+$/, '');
+  }
+  let anchored = pattern.startsWith('/');
+  if (anchored) pattern = pattern.slice(1);
+  if (!anchored && pattern.includes('/')) anchored = true;
+  if (!pattern) return null;
+
+  let re = '';
+  for (let i = 0; i < pattern.length; i++) {
+    const ch = pattern[i];
+    if (ch === '*') {
+      if (pattern[i + 1] === '*') {
+        i += 1;
+        if (pattern[i + 1] === '/') {
+          i += 1;
+          re += '(?:[^/]+/)*';
+        } else {
+          re += '.*';
+        }
+      } else {
+        re += '[^/]*';
+      }
+    } else if (ch === '?') {
+      re += '[^/]';
+    } else {
+      re += ch.replace(/[.+^${}()|[\]\\]/g, '\\$&');
+    }
+  }
+
+  const body = anchored ? '^' + re : '^(?:.*/)?' + re;
+  return { negate, dirOnly, re: new RegExp(body + '(?:/.*)?$') };
+}
+
+function loadIgnoreRules(root) {
+  const file = path.join(root, '.clineignore');
+  if (!fs.existsSync(file)) return null;
+  const rules = fs
+    .readFileSync(file, 'utf8')
+    .split(/\r?\n/)
+    .map(compilePattern)
+    .filter(Boolean);
+  return rules.length > 0 ? rules : null;
+}
+
+function toRelative(root, candidate) {
+  const value = String(candidate).replace(/\\/g, '/').replace(/^\.\//, '');
+  const isAbsolute = /^[A-Za-z]:\//.test(value) || value.startsWith('/');
+  const rel = isAbsolute ? path.relative(root, value).replace(/\\/g, '/') : value;
+  if (!rel || rel.startsWith('..')) return null;
+  return rel;
+}
+
+function isIgnored(rules, relative) {
+  let ignored = false;
+  for (const rule of rules) {
+    if (rule.re.test(relative)) ignored = !rule.negate;
+  }
+  return ignored;
+}
+// ---------- ekstraksi kandidat path per tool ----------
+function pushValue(list, value) {
+  const parsed = dejson(value);
+  if (typeof parsed === 'string') {
+    list.push(parsed);
+  } else if (parsed && typeof parsed === 'object') {
+    const p = parsed.path || parsed.file_path || parsed.filePath;
+    if (typeof p === 'string') list.push(p);
+  }
+}
+
+function fileCandidates(input) {
+  const list = [];
+  if (typeof input === 'string') {
+    list.push(input);
+    return list;
+  }
+  if (Array.isArray(input)) {
+    input.forEach((value) => pushValue(list, value));
+    return list;
+  }
+  if (input && typeof input === 'object') {
+    [input.path, input.file_path, input.filePath].forEach((value) => pushValue(list, value));
+    ['files', 'paths', 'file_paths', 'filePaths'].forEach((key) => {
+      const raw = dejson(input[key]);
+      if (Array.isArray(raw)) raw.forEach((value) => pushValue(list, value));
+      else if (raw) pushValue(list, raw);
+    });
+  }
+  return list;
+}
+
+function patchCandidates(input) {
+  const text = typeof input === 'string' ? input : JSON.stringify(input);
+  const list = [];
+  const header = /^\*\*\* (?:Add|Update|Delete) File: (.+)$|^\*\*\* Move to: (.+)$/gm;
+  let match;
+  while ((match = header.exec(text)) !== null) {
+    list.push(String(match[1] || match[2] || '').trim());
+  }
+  return list;
+}
+
+function commandCandidates(input) {
+  const commands = Array.isArray(input)
+    ? input
+    : input && typeof input === 'object'
+      ? [input.commands || input.command || input.cmd || []].flat()
+      : [input];
+  const tokens = [];
+  for (const command of commands.flat()) {
+    if (typeof command !== 'string') continue;
+    for (const token of command.split(/[\s;|&()<>"']+/)) {
+      if (!token || token.startsWith('-')) continue;
+      tokens.push(token);
+    }
+  }
+  return tokens;
+}
+
+// ---------- main ----------
+function evaluate(payload) {
+  const tool =
+    (payload.tool_call && payload.tool_call.name) ||
+    (payload.preToolUse && payload.preToolUse.toolName) ||
+    '';
+  if (!['read_files', 'editor', 'apply_patch', 'run_commands'].includes(tool)) return allow();
+
+  const roots = Array.isArray(payload.workspaceRoots) ? payload.workspaceRoots : [];
+  const root = path.resolve(roots[0] || process.cwd());
+  const rules = loadIgnoreRules(root);
+  if (!rules) return allow();
+
+  const rawInput = payload.tool_call
+    ? payload.tool_call.input
+    : payload.preToolUse && payload.preToolUse.parameters;
+  const input = dejson(rawInput) || {};
+
+  const candidates =
+    tool === 'run_commands'
+      ? commandCandidates(input)
+      : tool === 'apply_patch'
+        ? patchCandidates(input)
+        : fileCandidates(input);
+
+  const relatives = candidates
+    .map((candidate) => (typeof candidate === 'string' ? toRelative(root, candidate) : null))
+    .filter(Boolean);
+  if (relatives.length === 0) return allow();
+
+  if (tool !== 'read_files' && relatives.includes('.clineignore')) {
+    return block(
+      `Blocked ${tool}: mengubah .clineignore tidak diizinkan. Ubah manual bila file perlu di-un-ignore.`
+    );
+  }
+
+  const blocked = relatives.filter((relative) => isIgnored(rules, relative));
+  if (blocked.length > 0) {
+    return block(
+      `Blocked ${tool}: ${blocked.join(', ')} cocok dengan pola .clineignore, sehingga Cline tidak boleh mengaksesnya. ` +
+        'Ubah .clineignore bila akses memang perlu.'
+    );
+  }
+  return allow();
+}
+
+function selfTest() {
+  const root = path.resolve(HERE, '..', '..');
+  const rules = loadIgnoreRules(root);
+  if (!rules) {
+    console.error('SKIP: .clineignore tidak ditemukan di ' + root);
+    process.exit(1);
+  }
+  const cases = [
+    ['node_modules/react/index.js', true],
+    ['dist/index.html', true],
+    ['reports/shots/01-setup-gedung.png', true],
+    ['reports/laporan-it-kebon-jeruk.pdf', true],
+    ['data/siaga-it.json', true],
+    ['package-lock.json', true],
+    ['vite-dev.log', true],
+    ['android/.gradle/7.6/fileHashes.bin', true],
+    ['android/app/build/outputs/apk/debug/app-debug.apk', true],
+    ['src/App.tsx', false],
+    ['src/components/property/PropertyManagement.tsx', false],
+    ['android/app/src/main/java/co/rukita/siagait/WifiSignalPlugin.java', false],
+    ['docs/PROJECT-MAP.md', false],
+    ['.clineignore', false],
+  ];
+  let failed = 0;
+  for (const [relative, expected] of cases) {
+    const actual = isIgnored(rules, relative);
+    const ok = actual === expected;
+    if (!ok) failed += 1;
+    console.log(`${ok ? 'OK  ' : 'FAIL'}  ignored=${String(actual).padEnd(5)} ${relative}`);
+  }
+  console.log(failed === 0 ? `OK - ${cases.length} kasus .clineignore sesuai` : `FAIL - ${failed} kasus salah`);
+  process.exit(failed === 0 ? 0 : 1);
+}
+
+try {
+  if (process.argv.includes('--self-test')) {
+    selfTest();
+  } else {
+    let raw = '';
+    try {
+      raw = fs.readFileSync(0, 'utf8');
+    } catch {
+      raw = '';
+    }
+    evaluate(JSON.parse(raw || '{}'));
+  }
+} catch (error) {
+  allow();
+}
+

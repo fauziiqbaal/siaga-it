@@ -11,6 +11,13 @@ node_modules
 # dist (Included for direct Python server deployment without npm on VPS)
 dist-ssr
 *.local
+.report-build
+.ssr-check
+.shots-build
+data/
+.tmp-data/
+.tmp-live/
+
 
 # Editor directories and files
 .vscode/*

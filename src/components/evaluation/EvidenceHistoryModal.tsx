@@ -20,7 +20,7 @@ export interface EvidencePhotoItem {
   url: string;
   title: string;
   pillar: 'WIFI' | 'TV' | 'SMARTLOCK' | 'GENERAL';
-  statusTag?: 'PASS' | 'FAIL' | 'SPEEDTEST' | 'RESOLVED' | 'INSPECTION';
+  statusTag?: 'OK' | 'RUSAK' | 'SPEEDTEST' | 'RESOLVED' | 'INSPECTION';
   timestamp?: string;
   note?: string;
 }
@@ -230,9 +230,9 @@ export const EvidenceHistoryModal: React.FC<EvidenceHistoryModalProps> = ({
                           <span className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-bold uppercase shadow-xs ${
                             photo.statusTag === 'SPEEDTEST'
                               ? 'bg-emerald-600/90 text-white'
-                              : photo.statusTag === 'RESOLVED' || photo.statusTag === 'PASS'
+                              : photo.statusTag === 'RESOLVED' || photo.statusTag === 'OK'
                               ? 'bg-emerald-600/90 text-white'
-                              : photo.statusTag === 'FAIL'
+                              : photo.statusTag === 'RUSAK'
                               ? 'bg-rose-600/90 text-white'
                               : 'bg-muted text-foreground'
                           }`}>

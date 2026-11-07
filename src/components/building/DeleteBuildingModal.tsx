@@ -56,7 +56,6 @@ export const DeleteBuildingModal: React.FC<DeleteBuildingModalProps> = ({
   const totalRooms = building.floors.reduce((acc, f) => acc + f.rooms.length, 0);
   const totalCctv = building.cctvPoints?.length || 0;
   const totalDevices = building.devices?.length || 0;
-  const isOnlyBuilding = totalBuildingsCount <= 1;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,11 +63,6 @@ export const DeleteBuildingModal: React.FC<DeleteBuildingModalProps> = ({
 
     if (!isAuthorized) {
       setErrorMessage('Akses ditolak: Hanya akun Administrator / Backoffice yang berhak menghapus properti.');
-      return;
-    }
-
-    if (isOnlyBuilding) {
-      setErrorMessage('Tidak dapat menghapus properti ini. Sistem membutuhkan minimal 1 properti aktif.');
       return;
     }
 
@@ -151,26 +145,6 @@ export const DeleteBuildingModal: React.FC<DeleteBuildingModalProps> = ({
                 className="px-4 py-2 rounded-lg bg-background border border-border text-foreground font-semibold text-xs hover:bg-muted transition-colors"
               >
                 Kembali & Tutup
-              </button>
-            </div>
-          </div>
-        ) : isOnlyBuilding ? (
-          /* 2. PROTEKSI GEDUNG TERAKHIR */
-          <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400 text-xs space-y-2 mb-4">
-            <div className="flex items-center gap-2 font-bold text-sm">
-              <AlertTriangle className="w-4 h-4 shrink-0" />
-              <span>Gedung Terakhir Tidak Dapat Dihapus</span>
-            </div>
-            <p className="text-[11px] leading-relaxed">
-              Ini adalah satu-satunya properti yang terdaftar di sistem. Anda harus menambahkan properti baru terlebih dahulu sebelum dapat menghapus properti <strong>{building.name}</strong>.
-            </p>
-            <div className="pt-2 text-right">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-3.5 py-1.5 rounded-lg bg-background border border-border text-foreground font-semibold text-xs"
-              >
-                Tutup
               </button>
             </div>
           </div>

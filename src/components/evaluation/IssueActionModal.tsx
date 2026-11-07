@@ -125,6 +125,7 @@ export const IssueActionModal: React.FC<IssueActionModalProps> = ({
   const [photoTimestamp, setPhotoTimestamp] = useState<string>('');
   const [photoFileName, setPhotoFileName] = useState<string>('');
   const [isZoomingPhoto, setIsZoomingPhoto] = useState<string | null>(null);
+  const [isLiveCameraOpen, setIsLiveCameraOpen] = useState(false);
 
   if (!isOpen) return null;
 
@@ -158,8 +159,6 @@ export const IssueActionModal: React.FC<IssueActionModalProps> = ({
       alert('Gagal memproses gambar. Silakan coba lagi.');
     }
   };
-
-  const [isLiveCameraOpen, setIsLiveCameraOpen] = useState(false);
 
   // Handle Photo Capture from Live Camera Viewfinder
   const handleLivePhotoCapture = (dataUrl: string, _file: File) => {

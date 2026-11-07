@@ -727,7 +727,7 @@ export const OpeningCalendarView: React.FC<OpeningCalendarViewProps> = ({
                       const b = evt.building;
                       const allR = b.floors.flatMap(f => f.rooms);
                       const allF = b.floors.flatMap(f => f.facilities);
-                      const passedR = allR.filter(r => r.wifiStatus === 'PASS').length;
+                      const passedR = allR.filter(r => r.wifiStatus === 'OK').length;
                       const pct = Math.round((passedR / (allR.length || 1)) * 100);
 
                       return (
@@ -806,7 +806,7 @@ export const OpeningCalendarView: React.FC<OpeningCalendarViewProps> = ({
                     {selectedDayEvents.filter(e => e.type === 'PRE_SALE').map(evt => {
                       const b = evt.building;
                       const allR = b.floors.flatMap(f => f.rooms);
-                      const passedR = allR.filter(r => r.wifiStatus === 'PASS').length;
+                      const passedR = allR.filter(r => r.wifiStatus === 'OK').length;
                       const pct = Math.round((passedR / (allR.length || 1)) * 100);
 
                       return (
@@ -887,7 +887,7 @@ export const OpeningCalendarView: React.FC<OpeningCalendarViewProps> = ({
                       const dueEvt = evt as CalendarDueDateEvent;
                       const b = dueEvt.building;
                       const allR = b.floors.flatMap(f => f.rooms);
-                      const passedR = allR.filter(r => r.wifiStatus === 'PASS').length;
+                      const passedR = allR.filter(r => r.wifiStatus === 'OK').length;
                       const pct = Math.round((passedR / (allR.length || 1)) * 100);
 
                       return (

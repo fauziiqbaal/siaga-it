@@ -32,7 +32,7 @@ interface ItemInspectModalProps {
   onClose: () => void;
   target: InspectTarget | null;
   onConfirmInspection: (params: {
-    status: 'PASS' | 'FAIL';
+    status: 'OK' | 'RUSAK';
     note?: string;
     photoUrl?: string;
     issuePreset?: string;
@@ -112,7 +112,7 @@ export const ItemInspectModal: React.FC<ItemInspectModalProps> = ({
       ? 'Inspeksi TV lengkap: Layar jernih, remote & audio normal lancar' 
       : 'Inspeksi Smartlock lengkap: Tap RFID <1s, deadbolt pas, baterai normal';
     onConfirmInspection({
-      status: 'PASS',
+      status: 'OK',
       note: note.trim() || defaultNote,
       photoUrl: photoUrl || undefined,
     });
@@ -123,7 +123,7 @@ export const ItemInspectModal: React.FC<ItemInspectModalProps> = ({
   const handleFail = () => {
     const defaultIssue = selectedFailPreset || (isTv ? 'Kendala TV / display bermasalah' : 'Kendala smartlock / akses pintu bermasalah');
     onConfirmInspection({
-      status: 'FAIL',
+      status: 'RUSAK',
       note: note.trim() || defaultIssue,
       photoUrl: photoUrl || undefined,
       issuePreset: defaultIssue,
@@ -163,13 +163,21 @@ export const ItemInspectModal: React.FC<ItemInspectModalProps> = ({
                   Inspeksi {isTv ? 'TV & Media' : 'Smartlock & Akses'}
                 </h3>
                 <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold border ${
-                  target.currentStatus === 'PASS' 
+                  target.currentStatus === 'OK' 
                     ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30' 
-                    : target.currentStatus === 'FAIL' 
+                    : target.currentStatus === 'RUSAK' 
                     ? 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/30' 
                     : 'bg-muted text-muted-foreground border-border'
                 }`}>
-                  {target.currentStatus === 'PASS' ? 'Saat Ini: PASS' : target.currentStatus === 'FAIL' ? 'Saat Ini: FAIL' : 'Belum Diinspeksi'}
+                  {target.currentStatus === 'OK'
+                    ? 'Saat Ini: OK'
+                    : target.currentStatus === 'NEED_IMPROVE'
+                      ? 'Saat Ini: Need Improvement'
+                      : target.currentStatus === 'RUSAK'
+                        ? 'Saat Ini: Rusak'
+                        : target.currentStatus === 'BELUM_TERSEDIA'
+                          ? 'Saat Ini: Belum Tersedia'
+                          : 'Belum Diinspeksi'}
                 </span>
               </div>
               <p className="text-xs text-muted-foreground truncate mt-0.5">

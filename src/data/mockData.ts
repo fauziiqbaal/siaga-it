@@ -202,13 +202,13 @@ export const APP_USERS: SimpleUser[] = [
 
 export function generateCCTVPoints(): CCTVPoint[] {
   return [
-    { id: 'cctv-1', pointNumber: 1, locationName: 'Titik 1', objectCoverage: 'Pagar & Akses Depan', floorNumber: 1, cctvStatus: 'ONLINE', status: 'PASS', isRecording: true, installationStatus: 'TERPASANG', connectivityType: 'LAN_POE_NVR', isStandalone: false },
-    { id: 'cctv-2', pointNumber: 2, locationName: 'Titik 2', objectCoverage: 'Area Parkir Kendaraan', floorNumber: 1, cctvStatus: 'ONLINE', status: 'PASS', isRecording: true, installationStatus: 'TERPASANG', connectivityType: 'WIFI_CAM_STANDALONE', isStandalone: true, takeoverStatus: 'SUDAH_TAKEOVER', masterAccount: 'siaga.it@rukita.co', takeoverDate: '16 Okt 2026' },
-    { id: 'cctv-3', pointNumber: 3, locationName: 'Titik 3', objectCoverage: 'Pintu Masuk / Foyer', floorNumber: 1, cctvStatus: 'PERLU_REPOSISI', status: 'FAIL', isRecording: true, notes: 'Sudut sorotan terlalu menunduk, perlu reposisi ke arah pintu', installationStatus: 'PERLU_RELOKASI', connectivityType: 'LAN_POE_NVR', isStandalone: false },
-    { id: 'cctv-4', pointNumber: 4, locationName: 'Titik 4', objectCoverage: 'Dapur Bersama', floorNumber: 1, cctvStatus: 'OFFLINE', status: 'FAIL', isRecording: false, notes: 'Kamera offline, adaptor lepas', installationStatus: 'TERPASANG', connectivityType: 'LAN_NON_POE_NVR', isStandalone: false },
-    { id: 'cctv-5', pointNumber: 5, locationName: 'Titik 5', objectCoverage: 'Koridor Kamar Lt 2', floorNumber: 2, cctvStatus: 'ONLINE', status: 'PASS', isRecording: true, installationStatus: 'TERPASANG', connectivityType: 'COAXIAL_DVR', isStandalone: false },
+    { id: 'cctv-1', pointNumber: 1, locationName: 'Titik 1', objectCoverage: 'Pagar & Akses Depan', floorNumber: 1, cctvStatus: 'ONLINE', status: 'OK', isRecording: true, installationStatus: 'TERPASANG', connectivityType: 'LAN_POE_NVR', isStandalone: false },
+    { id: 'cctv-2', pointNumber: 2, locationName: 'Titik 2', objectCoverage: 'Area Parkir Kendaraan', floorNumber: 1, cctvStatus: 'ONLINE', status: 'OK', isRecording: true, installationStatus: 'TERPASANG', connectivityType: 'WIFI_CAM_STANDALONE', isStandalone: true, takeoverStatus: 'SUDAH_TAKEOVER', masterAccount: 'siaga.it@rukita.co', takeoverDate: '16 Okt 2026' },
+    { id: 'cctv-3', pointNumber: 3, locationName: 'Titik 3', objectCoverage: 'Pintu Masuk / Foyer', floorNumber: 1, cctvStatus: 'PERLU_REPOSISI', status: 'RUSAK', isRecording: true, notes: 'Sudut sorotan terlalu menunduk, perlu reposisi ke arah pintu', installationStatus: 'PERLU_RELOKASI', connectivityType: 'LAN_POE_NVR', isStandalone: false },
+    { id: 'cctv-4', pointNumber: 4, locationName: 'Titik 4', objectCoverage: 'Dapur Bersama', floorNumber: 1, cctvStatus: 'OFFLINE', status: 'RUSAK', isRecording: false, notes: 'Kamera offline, adaptor lepas', installationStatus: 'TERPASANG', connectivityType: 'LAN_NON_POE_NVR', isStandalone: false },
+    { id: 'cctv-5', pointNumber: 5, locationName: 'Titik 5', objectCoverage: 'Koridor Kamar Lt 2', floorNumber: 2, cctvStatus: 'ONLINE', status: 'OK', isRecording: true, installationStatus: 'TERPASANG', connectivityType: 'COAXIAL_DVR', isStandalone: false },
     { id: 'cctv-6', pointNumber: 6, locationName: 'Titik 6', objectCoverage: 'Koridor Kamar Lt 3', floorNumber: 3, cctvStatus: 'BELUM_DIKETAHUI', status: 'PENDING', isRecording: false, notes: 'Belum dicek fisik di lapangan & NVR', installationStatus: 'TERPASANG', connectivityType: 'WIFI_CAM_NVR', isStandalone: false },
-    { id: 'cctv-7', pointNumber: 7, locationName: 'Titik 7', objectCoverage: 'Tangga Akses & Rooftop', floorNumber: 3, cctvStatus: 'ONLINE', status: 'PASS', isRecording: true, installationStatus: 'TERPASANG', connectivityType: 'WIFI_CAM_STANDALONE', isStandalone: true, takeoverStatus: 'BELUM_TAKEOVER', masterAccount: 'Ibu Christine (Owner Lama)' },
+    { id: 'cctv-7', pointNumber: 7, locationName: 'Titik 7', objectCoverage: 'Tangga Akses & Rooftop', floorNumber: 3, cctvStatus: 'ONLINE', status: 'OK', isRecording: true, installationStatus: 'TERPASANG', connectivityType: 'WIFI_CAM_STANDALONE', isStandalone: true, takeoverStatus: 'BELUM_TAKEOVER', masterAccount: 'Ibu Christine (Owner Lama)' },
     { id: 'cctv-8', pointNumber: 8, locationName: 'Titik 8', objectCoverage: 'Area Jemuran & Balkon Belakang', floorNumber: 3, cctvStatus: 'PERLU_INSTALASI', status: 'PENDING', isRecording: false, notes: 'Titik pengawasan baru dibutuhkan, belum ada instalasi kabel & kamera', installationStatus: 'BELUM_TERPASANG', connectivityType: 'LAN_POE_NVR', isStandalone: false },
   ];
 }
@@ -320,7 +320,15 @@ export function generateDefaultDevices(floors: FloorConfig[]): ITDevice[] {
   return devices;
 }
 
-export const INITIAL_BUILDINGS: Building[] = [
+/**
+ * Data contoh (BUKAN data awal aplikasi).
+ *
+ * Dulu array ini dipakai sebagai `INITIAL_BUILDINGS`, sehingga setiap refresh —
+ * atau setiap kali semua gedung dihapus — properti demo muncul lagi dan terlihat
+ * seperti aplikasi hanya demo. Sekarang data contoh hanya dipakai oleh skrip
+ * laporan/uji (`scripts/`), tidak pernah di-seed otomatis ke aplikasi.
+ */
+export const SAMPLE_BUILDINGS: Building[] = [
   {
     id: 'bld-tomang',
     name: 'Rukita Tawakal Tomang (Coliving)',
@@ -331,6 +339,7 @@ export const INITIAL_BUILDINGS: Building[] = [
     wifiStandardProfile: {
       guestSsid: '@Rukita Tawakal Community',
       guestPassword: 'RukitaLive2026!',
+      configModel: 'PISAH',
       isCaptivePortal: false,
       opsSsid: 'Rukita-Ops-Tomang',
       opsPassword: 'Ops#Tomang2026',
@@ -436,14 +445,14 @@ export const INITIAL_BUILDINGS: Building[] = [
         floorPlanUpdatedAt: '19 Okt 2026 11:30',
         floorPlanNotes: 'AP Plafon tengah koridor meng-cover kamar 101-103 dan lobi depan. Switch MDF di rack lobi.',
         rooms: [
-          { id: 'rm-101', number: '101', floor: 1, hasTv: true, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 65, wifiSignalDbm: -52, tvType: 'ANDROID_GOOGLE_TV', tvStatus: 'PASS', lockType: 'KUNCI_BIASA', lockStatus: 'PASS' },
-          { id: 'rm-102', number: '102', floor: 1, hasTv: false, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 70, wifiSignalDbm: -48, tvType: 'NONE', tvStatus: 'NA', lockType: 'KUNCI_BIASA', lockStatus: 'PASS' },
-          { id: 'rm-103', number: '103', floor: 1, hasTv: false, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 55, wifiSignalDbm: -61, tvType: 'NONE', tvStatus: 'NA', lockType: 'KUNCI_BIASA', lockStatus: 'PASS' },
+          { id: 'rm-101', number: '101', floor: 1, hasTv: true, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 65, wifiSignalDbm: -52, tvType: 'ANDROID_TV', tvStatus: 'OK', lockType: 'KUNCI_BIASA', lockStatus: 'OK' },
+          { id: 'rm-102', number: '102', floor: 1, hasTv: false, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 70, wifiSignalDbm: -48, tvType: 'NONE', tvStatus: 'BELUM_TERSEDIA', lockType: 'KUNCI_BIASA', lockStatus: 'OK' },
+          { id: 'rm-103', number: '103', floor: 1, hasTv: false, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 55, wifiSignalDbm: -61, tvType: 'NONE', tvStatus: 'BELUM_TERSEDIA', lockType: 'KUNCI_BIASA', lockStatus: 'OK' },
         ],
         facilities: [
-          { id: 'fac-gate', name: 'Pagar & Gerbang Utama', type: 'PAGAR_GERBANG', floor: 1, hasWifi: true, wifiStatus: 'PASS', wifiSpeedMbps: 50, wifiSignalDbm: -63, hasTv: false, tvStatus: 'NA', hasLock: true, lockType: 'SMARTLOCK_GATE_ACCESS', lockStatus: 'PASS', notes: 'Keypad PIN & Card tapping normal' },
-          { id: 'fac-kitchen-1', name: 'Dapur Bersama Utama', type: 'DAPUR', floor: 1, hasWifi: true, wifiStatus: 'PASS', wifiSpeedMbps: 85, wifiSignalDbm: -45, hasTv: false, tvStatus: 'NA', hasLock: false, lockType: 'KUNCI_BIASA', lockStatus: 'NA' },
-          { id: 'fac-parking', name: 'Area Parkir Motor', type: 'PARKIRAN', floor: 1, hasWifi: true, wifiStatus: 'PASS', wifiSpeedMbps: 45, wifiSignalDbm: -68, hasTv: false, tvStatus: 'NA', hasLock: false, lockType: 'KUNCI_BIASA', lockStatus: 'NA' },
+          { id: 'fac-gate', name: 'Pagar & Gerbang Utama', type: 'PAGAR_GERBANG', floor: 1, hasWifi: true, wifiStatus: 'OK', wifiSpeedMbps: 50, wifiSignalDbm: -63, hasTv: false, tvStatus: 'BELUM_TERSEDIA', hasLock: true, lockType: 'SMARTLOCK_GATE_ACCESS', lockStatus: 'OK', notes: 'Keypad PIN & Card tapping normal' },
+          { id: 'fac-kitchen-1', name: 'Dapur Bersama Utama', type: 'DAPUR', floor: 1, hasWifi: true, wifiStatus: 'OK', wifiSpeedMbps: 85, wifiSignalDbm: -45, hasTv: false, tvStatus: 'BELUM_TERSEDIA', hasLock: false, lockType: 'KUNCI_BIASA', lockStatus: 'BELUM_TERSEDIA' },
+          { id: 'fac-parking', name: 'Area Parkir Motor', type: 'PARKIRAN', floor: 1, hasWifi: true, wifiStatus: 'OK', wifiSpeedMbps: 45, wifiSignalDbm: -68, hasTv: false, tvStatus: 'BELUM_TERSEDIA', hasLock: false, lockType: 'KUNCI_BIASA', lockStatus: 'BELUM_TERSEDIA' },
         ],
       },
       {
@@ -451,17 +460,17 @@ export const INITIAL_BUILDINGS: Building[] = [
         floorNumber: 2,
         name: 'Lantai 2 (Kamar & Balcony)',
         rooms: [
-          { id: 'rm-201', number: '201', floor: 2, hasTv: true, hasSmartlock: true, wifiStatus: 'PASS', wifiSpeedMbps: 80, wifiSignalDbm: -46, tvType: 'ANDROID_GOOGLE_TV', tvStatus: 'PASS', lockType: 'SMARTLOCK_HANDLE', lockStatus: 'PASS' },
-          { id: 'rm-202', number: '202', floor: 2, hasTv: false, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 75, wifiSignalDbm: -54, tvType: 'NONE', tvStatus: 'NA', lockType: 'KUNCI_BIASA', lockStatus: 'NA' },
-          { id: 'rm-203', number: '203', floor: 2, hasTv: false, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 65, wifiSignalDbm: -58, tvType: 'NONE', tvStatus: 'NA', lockType: 'KUNCI_BIASA', lockStatus: 'NA' },
-          { id: 'rm-204', number: '204', floor: 2, hasTv: false, hasSmartlock: false, wifiStatus: 'FAIL', wifiSpeedMbps: 14, wifiSignalDbm: -82, tvType: 'NONE', tvStatus: 'NA', lockType: 'KUNCI_BIASA', lockStatus: 'NA', notes: 'Sinyal drop di meja kerja' },
-          { id: 'rm-205', number: '205', floor: 2, hasTv: true, hasSmartlock: true, wifiStatus: 'PENDING', wifiSpeedMbps: 0, tvType: 'ANDROID_GOOGLE_TV', tvStatus: 'PENDING', lockType: 'SMARTLOCK_HANDLE', lockStatus: 'PENDING' },
-          { id: 'rm-206', number: '206', floor: 2, hasTv: true, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 72, wifiSignalDbm: -52, tvType: 'ANDROID_GOOGLE_TV', tvStatus: 'PENDING', lockType: 'KUNCI_BIASA', lockStatus: 'NA' },
-          { id: 'rm-207', number: '207', floor: 2, hasTv: false, hasSmartlock: true, wifiStatus: 'PASS', wifiSpeedMbps: 60, wifiSignalDbm: -60, tvType: 'NONE', tvStatus: 'NA', lockType: 'SMARTLOCK_HANDLE', lockStatus: 'PENDING' },
+          { id: 'rm-201', number: '201', floor: 2, hasTv: true, hasSmartlock: true, wifiStatus: 'OK', wifiSpeedMbps: 80, wifiSignalDbm: -46, tvType: 'ANDROID_TV', tvStatus: 'OK', lockType: 'SMARTLOCK_HANDLE', lockStatus: 'OK' },
+          { id: 'rm-202', number: '202', floor: 2, hasTv: false, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 75, wifiSignalDbm: -54, tvType: 'NONE', tvStatus: 'BELUM_TERSEDIA', lockType: 'KUNCI_BIASA', lockStatus: 'BELUM_TERSEDIA' },
+          { id: 'rm-203', number: '203', floor: 2, hasTv: false, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 65, wifiSignalDbm: -58, tvType: 'NONE', tvStatus: 'BELUM_TERSEDIA', lockType: 'KUNCI_BIASA', lockStatus: 'BELUM_TERSEDIA' },
+          { id: 'rm-204', number: '204', floor: 2, hasTv: false, hasSmartlock: false, wifiStatus: 'RUSAK', wifiSpeedMbps: 14, wifiSignalDbm: -82, tvType: 'NONE', tvStatus: 'BELUM_TERSEDIA', lockType: 'KUNCI_BIASA', lockStatus: 'BELUM_TERSEDIA', notes: 'Sinyal drop di meja kerja' },
+          { id: 'rm-205', number: '205', floor: 2, hasTv: true, hasSmartlock: true, wifiStatus: 'PENDING', wifiSpeedMbps: 0, tvType: 'ANDROID_TV', tvStatus: 'PENDING', lockType: 'SMARTLOCK_HANDLE', lockStatus: 'PENDING' },
+          { id: 'rm-206', number: '206', floor: 2, hasTv: true, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 72, wifiSignalDbm: -52, tvType: 'ANDROID_TV', tvStatus: 'PENDING', lockType: 'KUNCI_BIASA', lockStatus: 'BELUM_TERSEDIA' },
+          { id: 'rm-207', number: '207', floor: 2, hasTv: false, hasSmartlock: true, wifiStatus: 'OK', wifiSpeedMbps: 60, wifiSignalDbm: -60, tvType: 'NONE', tvStatus: 'BELUM_TERSEDIA', lockType: 'SMARTLOCK_HANDLE', lockStatus: 'PENDING' },
         ],
         facilities: [
-          { id: 'fac-lounge-2', name: 'Communal Lounge & TV Bersama', type: 'COMMUNAL_LOUNGE', floor: 2, hasWifi: true, wifiStatus: 'PASS', wifiSpeedMbps: 90, wifiSignalDbm: -42, hasTv: true, tvStatus: 'PASS', hasLock: false, lockType: 'NONE', lockStatus: 'NA', notes: 'Google TV 50" YouTube/Netflix lancar' },
-          { id: 'fac-balcony-2', name: 'Balcony Depan Santai', type: 'BALCONY', floor: 2, hasWifi: true, wifiStatus: 'PASS', wifiSpeedMbps: 55, wifiSignalDbm: -64, hasTv: false, tvStatus: 'NA', hasLock: false, lockType: 'NONE', lockStatus: 'NA' },
+          { id: 'fac-lounge-2', name: 'Communal Lounge & TV Bersama', type: 'COMMUNAL_LOUNGE', floor: 2, hasWifi: true, wifiStatus: 'OK', wifiSpeedMbps: 90, wifiSignalDbm: -42, hasTv: true, tvStatus: 'OK', hasLock: false, lockType: 'NONE', lockStatus: 'BELUM_TERSEDIA', notes: 'Google TV 50" YouTube/Netflix lancar' },
+          { id: 'fac-balcony-2', name: 'Balcony Depan Santai', type: 'BALCONY', floor: 2, hasWifi: true, wifiStatus: 'OK', wifiSpeedMbps: 55, wifiSignalDbm: -64, hasTv: false, tvStatus: 'BELUM_TERSEDIA', hasLock: false, lockType: 'NONE', lockStatus: 'BELUM_TERSEDIA' },
         ],
       },
       {
@@ -469,14 +478,14 @@ export const INITIAL_BUILDINGS: Building[] = [
         floorNumber: 3,
         name: 'Lantai 3 (Kamar & Rooftop)',
         rooms: [
-          { id: 'rm-301', number: '301', floor: 3, hasTv: true, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 75, wifiSignalDbm: -49, tvType: 'ANDROID_GOOGLE_TV', tvStatus: 'PASS', lockType: 'KUNCI_BIASA', lockStatus: 'PASS' },
-          { id: 'rm-302', number: '302', floor: 3, hasTv: false, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 65, wifiSignalDbm: -55, tvType: 'NONE', tvStatus: 'NA', lockType: 'KUNCI_BIASA', lockStatus: 'PASS' },
-          { id: 'rm-303', number: '303', floor: 3, hasTv: false, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 68, wifiSignalDbm: -53, tvType: 'NONE', tvStatus: 'NA', lockType: 'KUNCI_BIASA', lockStatus: 'PASS' },
-          { id: 'rm-304', number: '304', floor: 3, hasTv: false, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 55, wifiSignalDbm: -62, tvType: 'NONE', tvStatus: 'NA', lockType: 'KUNCI_BIASA', lockStatus: 'PASS' },
+          { id: 'rm-301', number: '301', floor: 3, hasTv: true, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 75, wifiSignalDbm: -49, tvType: 'ANDROID_TV', tvStatus: 'OK', lockType: 'KUNCI_BIASA', lockStatus: 'OK' },
+          { id: 'rm-302', number: '302', floor: 3, hasTv: false, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 65, wifiSignalDbm: -55, tvType: 'NONE', tvStatus: 'BELUM_TERSEDIA', lockType: 'KUNCI_BIASA', lockStatus: 'OK' },
+          { id: 'rm-303', number: '303', floor: 3, hasTv: false, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 68, wifiSignalDbm: -53, tvType: 'NONE', tvStatus: 'BELUM_TERSEDIA', lockType: 'KUNCI_BIASA', lockStatus: 'OK' },
+          { id: 'rm-304', number: '304', floor: 3, hasTv: false, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 55, wifiSignalDbm: -62, tvType: 'NONE', tvStatus: 'BELUM_TERSEDIA', lockType: 'KUNCI_BIASA', lockStatus: 'OK' },
         ],
         facilities: [
-          { id: 'fac-rooftop-3', name: 'Rooftop & Area Jemuran', type: 'ROOFTOP', floor: 3, hasWifi: true, wifiStatus: 'PASS', wifiSpeedMbps: 45, wifiSignalDbm: -67, hasTv: false, tvStatus: 'NA', hasLock: true, lockType: 'SMARTLOCK_HANDLE', lockStatus: 'PASS', notes: 'Pintu akses rooftop terkunci jam 22:00' },
-          { id: 'fac-laundry-3', name: 'Area Mesin Cuci Bersama', type: 'LAUNDRY', floor: 3, hasWifi: true, wifiStatus: 'PASS', wifiSpeedMbps: 50, wifiSignalDbm: -61, hasTv: false, tvStatus: 'NA', hasLock: false, lockType: 'KUNCI_BIASA', lockStatus: 'NA' },
+          { id: 'fac-rooftop-3', name: 'Rooftop & Area Jemuran', type: 'ROOFTOP', floor: 3, hasWifi: true, wifiStatus: 'OK', wifiSpeedMbps: 45, wifiSignalDbm: -67, hasTv: false, tvStatus: 'BELUM_TERSEDIA', hasLock: true, lockType: 'SMARTLOCK_HANDLE', lockStatus: 'OK', notes: 'Pintu akses rooftop terkunci jam 22:00' },
+          { id: 'fac-laundry-3', name: 'Area Mesin Cuci Bersama', type: 'LAUNDRY', floor: 3, hasWifi: true, wifiStatus: 'OK', wifiSpeedMbps: 50, wifiSignalDbm: -61, hasTv: false, tvStatus: 'BELUM_TERSEDIA', hasLock: false, lockType: 'KUNCI_BIASA', lockStatus: 'BELUM_TERSEDIA' },
         ],
       },
     ],
@@ -856,13 +865,13 @@ export const INITIAL_BUILDINGS: Building[] = [
         floorNumber: 1,
         name: 'Lantai 1',
         rooms: [
-          { id: 'kun-101', number: '101', floor: 1, hasTv: true, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 85, tvType: 'ANDROID_GOOGLE_TV', tvStatus: 'PASS', lockType: 'KUNCI_BIASA', lockStatus: 'PASS' },
-          { id: 'kun-102', number: '102', floor: 1, hasTv: false, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 80, tvType: 'NONE', tvStatus: 'NA', lockType: 'KUNCI_BIASA', lockStatus: 'PASS' },
+          { id: 'kun-101', number: '101', floor: 1, hasTv: true, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 85, tvType: 'ANDROID_TV', tvStatus: 'OK', lockType: 'KUNCI_BIASA', lockStatus: 'OK' },
+          { id: 'kun-102', number: '102', floor: 1, hasTv: false, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 80, tvType: 'NONE', tvStatus: 'BELUM_TERSEDIA', lockType: 'KUNCI_BIASA', lockStatus: 'OK' },
         ],
         facilities: [
-          { id: 'kun-gate', name: 'Pagar Gerbang Utama', type: 'PAGAR_GERBANG', floor: 1, hasWifi: true, wifiStatus: 'PASS', wifiSpeedMbps: 60, hasTv: false, tvStatus: 'NA', hasLock: true, lockType: 'SMARTLOCK_GATE_ACCESS', lockStatus: 'PASS' },
-          { id: 'kun-parking', name: 'Area Parkir Motor & Sepeda', type: 'PARKIRAN', floor: 1, hasWifi: true, wifiStatus: 'PASS', wifiSpeedMbps: 65, hasTv: false, tvStatus: 'NA', hasLock: false, lockType: 'KUNCI_BIASA', lockStatus: 'NA', notes: 'Wi-Fi AP Ruijie cover area parkir motor' },
-          { id: 'kun-kitchen', name: 'Dapur Bersama Lt 1', type: 'DAPUR', floor: 1, hasWifi: true, wifiStatus: 'PASS', wifiSpeedMbps: 90, hasTv: false, tvStatus: 'NA', hasLock: false, lockType: 'KUNCI_BIASA', lockStatus: 'NA' },
+          { id: 'kun-gate', name: 'Pagar Gerbang Utama', type: 'PAGAR_GERBANG', floor: 1, hasWifi: true, wifiStatus: 'OK', wifiSpeedMbps: 60, hasTv: false, tvStatus: 'BELUM_TERSEDIA', hasLock: true, lockType: 'SMARTLOCK_GATE_ACCESS', lockStatus: 'OK' },
+          { id: 'kun-parking', name: 'Area Parkir Motor & Sepeda', type: 'PARKIRAN', floor: 1, hasWifi: true, wifiStatus: 'OK', wifiSpeedMbps: 65, hasTv: false, tvStatus: 'BELUM_TERSEDIA', hasLock: false, lockType: 'KUNCI_BIASA', lockStatus: 'BELUM_TERSEDIA', notes: 'Wi-Fi AP Ruijie cover area parkir motor' },
+          { id: 'kun-kitchen', name: 'Dapur Bersama Lt 1', type: 'DAPUR', floor: 1, hasWifi: true, wifiStatus: 'OK', wifiSpeedMbps: 90, hasTv: false, tvStatus: 'BELUM_TERSEDIA', hasLock: false, lockType: 'KUNCI_BIASA', lockStatus: 'BELUM_TERSEDIA' },
         ],
       },
       {
@@ -870,13 +879,13 @@ export const INITIAL_BUILDINGS: Building[] = [
         floorNumber: 2,
         name: 'Lantai 2',
         rooms: [
-          { id: 'kun-201', number: '201', floor: 2, hasTv: false, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 75, tvType: 'NONE', tvStatus: 'NA', lockType: 'KUNCI_BIASA', lockStatus: 'PASS' },
-          { id: 'kun-202', number: '202', floor: 2, hasTv: false, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 75, tvType: 'NONE', tvStatus: 'NA', lockType: 'KUNCI_BIASA', lockStatus: 'PASS' },
-          { id: 'kun-203', number: '203', floor: 2, hasTv: false, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 75, tvType: 'NONE', tvStatus: 'NA', lockType: 'KUNCI_BIASA', lockStatus: 'PASS' },
+          { id: 'kun-201', number: '201', floor: 2, hasTv: false, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 75, tvType: 'NONE', tvStatus: 'BELUM_TERSEDIA', lockType: 'KUNCI_BIASA', lockStatus: 'OK' },
+          { id: 'kun-202', number: '202', floor: 2, hasTv: false, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 75, tvType: 'NONE', tvStatus: 'BELUM_TERSEDIA', lockType: 'KUNCI_BIASA', lockStatus: 'OK' },
+          { id: 'kun-203', number: '203', floor: 2, hasTv: false, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 75, tvType: 'NONE', tvStatus: 'BELUM_TERSEDIA', lockType: 'KUNCI_BIASA', lockStatus: 'OK' },
         ],
         facilities: [
-          { id: 'kun-rooftop', name: 'Rooftop Communal & Area Santai', type: 'ROOFTOP', floor: 2, hasWifi: true, wifiStatus: 'PASS', wifiSpeedMbps: 75, hasTv: false, tvStatus: 'NA', hasLock: true, lockType: 'SMARTLOCK_HANDLE', lockStatus: 'PASS', notes: 'Smartlock RFID & PIN akses rooftop' },
-          { id: 'kun-balcony', name: 'Balcony Santai Lt 2', type: 'BALCONY', floor: 2, hasWifi: true, wifiStatus: 'PASS', wifiSpeedMbps: 70, hasTv: false, tvStatus: 'NA', hasLock: false, lockType: 'KUNCI_BIASA', lockStatus: 'NA' },
+          { id: 'kun-rooftop', name: 'Rooftop Communal & Area Santai', type: 'ROOFTOP', floor: 2, hasWifi: true, wifiStatus: 'OK', wifiSpeedMbps: 75, hasTv: false, tvStatus: 'BELUM_TERSEDIA', hasLock: true, lockType: 'SMARTLOCK_HANDLE', lockStatus: 'OK', notes: 'Smartlock RFID & PIN akses rooftop' },
+          { id: 'kun-balcony', name: 'Balcony Santai Lt 2', type: 'BALCONY', floor: 2, hasWifi: true, wifiStatus: 'OK', wifiSpeedMbps: 70, hasTv: false, tvStatus: 'BELUM_TERSEDIA', hasLock: false, lockType: 'KUNCI_BIASA', lockStatus: 'BELUM_TERSEDIA' },
         ],
       },
     ],
@@ -1035,13 +1044,13 @@ export const INITIAL_BUILDINGS: Building[] = [
         floorNumber: 1,
         name: 'Lantai 1 (Lobby & Dapur)',
         rooms: [
-          { id: 'ben-101', number: '101', floor: 1, hasTv: true, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 85, tvType: 'ANDROID_GOOGLE_TV', tvStatus: 'PASS', lockType: 'KUNCI_BIASA', lockStatus: 'PASS' },
-          { id: 'ben-102', number: '102', floor: 1, hasTv: false, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 80, tvType: 'NONE', tvStatus: 'NA', lockType: 'KUNCI_BIASA', lockStatus: 'PASS' },
+          { id: 'ben-101', number: '101', floor: 1, hasTv: true, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 85, tvType: 'ANDROID_TV', tvStatus: 'OK', lockType: 'KUNCI_BIASA', lockStatus: 'OK' },
+          { id: 'ben-102', number: '102', floor: 1, hasTv: false, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 80, tvType: 'NONE', tvStatus: 'BELUM_TERSEDIA', lockType: 'KUNCI_BIASA', lockStatus: 'OK' },
         ],
         facilities: [
-          { id: 'ben-gate', name: 'Pagar Gerbang Otomatis', type: 'PAGAR_GERBANG', floor: 1, hasWifi: true, wifiStatus: 'PASS', wifiSpeedMbps: 65, hasTv: false, tvStatus: 'NA', hasLock: true, lockType: 'SMARTLOCK_GATE_ACCESS', lockStatus: 'PASS' },
-          { id: 'ben-parking', name: 'Area Parkir Motor & Mobil', type: 'PARKIRAN', floor: 1, hasWifi: true, wifiStatus: 'PASS', wifiSpeedMbps: 65, hasTv: false, tvStatus: 'NA', hasLock: false, lockType: 'KUNCI_BIASA', lockStatus: 'NA', notes: 'Cover Wi-Fi MyRepublic 65 Mbps' },
-          { id: 'ben-kitchen', name: 'Dapur & Ruang Makan', type: 'DAPUR', floor: 1, hasWifi: true, wifiStatus: 'PASS', wifiSpeedMbps: 90, hasTv: false, tvStatus: 'NA', hasLock: false, lockType: 'KUNCI_BIASA', lockStatus: 'NA' },
+          { id: 'ben-gate', name: 'Pagar Gerbang Otomatis', type: 'PAGAR_GERBANG', floor: 1, hasWifi: true, wifiStatus: 'OK', wifiSpeedMbps: 65, hasTv: false, tvStatus: 'BELUM_TERSEDIA', hasLock: true, lockType: 'SMARTLOCK_GATE_ACCESS', lockStatus: 'OK' },
+          { id: 'ben-parking', name: 'Area Parkir Motor & Mobil', type: 'PARKIRAN', floor: 1, hasWifi: true, wifiStatus: 'OK', wifiSpeedMbps: 65, hasTv: false, tvStatus: 'BELUM_TERSEDIA', hasLock: false, lockType: 'KUNCI_BIASA', lockStatus: 'BELUM_TERSEDIA', notes: 'Cover Wi-Fi MyRepublic 65 Mbps' },
+          { id: 'ben-kitchen', name: 'Dapur & Ruang Makan', type: 'DAPUR', floor: 1, hasWifi: true, wifiStatus: 'OK', wifiSpeedMbps: 90, hasTv: false, tvStatus: 'BELUM_TERSEDIA', hasLock: false, lockType: 'KUNCI_BIASA', lockStatus: 'BELUM_TERSEDIA' },
         ],
       },
       {
@@ -1049,9 +1058,9 @@ export const INITIAL_BUILDINGS: Building[] = [
         floorNumber: 2,
         name: 'Lantai 2 (Kamar)',
         rooms: [
-          { id: 'ben-201', number: '201', floor: 2, hasTv: false, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 75, tvType: 'NONE', tvStatus: 'NA', lockType: 'KUNCI_BIASA', lockStatus: 'PASS' },
-          { id: 'ben-202', number: '202', floor: 2, hasTv: false, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 70, tvType: 'NONE', tvStatus: 'NA', lockType: 'KUNCI_BIASA', lockStatus: 'PASS' },
-          { id: 'ben-203', number: '203', floor: 2, hasTv: false, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 72, tvType: 'NONE', tvStatus: 'NA', lockType: 'KUNCI_BIASA', lockStatus: 'PASS' },
+          { id: 'ben-201', number: '201', floor: 2, hasTv: false, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 75, tvType: 'NONE', tvStatus: 'BELUM_TERSEDIA', lockType: 'KUNCI_BIASA', lockStatus: 'OK' },
+          { id: 'ben-202', number: '202', floor: 2, hasTv: false, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 70, tvType: 'NONE', tvStatus: 'BELUM_TERSEDIA', lockType: 'KUNCI_BIASA', lockStatus: 'OK' },
+          { id: 'ben-203', number: '203', floor: 2, hasTv: false, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 72, tvType: 'NONE', tvStatus: 'BELUM_TERSEDIA', lockType: 'KUNCI_BIASA', lockStatus: 'OK' },
         ],
         facilities: [],
       },
@@ -1060,11 +1069,11 @@ export const INITIAL_BUILDINGS: Building[] = [
         floorNumber: 3,
         name: 'Lantai 3 (Rooftop & Kamar)',
         rooms: [
-          { id: 'ben-301', number: '301', floor: 3, hasTv: true, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 80, tvType: 'ANDROID_GOOGLE_TV', tvStatus: 'PASS', lockType: 'KUNCI_BIASA', lockStatus: 'PASS' },
-          { id: 'ben-302', number: '302', floor: 3, hasTv: false, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 75, tvType: 'NONE', tvStatus: 'NA', lockType: 'KUNCI_BIASA', lockStatus: 'PASS' },
+          { id: 'ben-301', number: '301', floor: 3, hasTv: true, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 80, tvType: 'ANDROID_TV', tvStatus: 'OK', lockType: 'KUNCI_BIASA', lockStatus: 'OK' },
+          { id: 'ben-302', number: '302', floor: 3, hasTv: false, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 75, tvType: 'NONE', tvStatus: 'BELUM_TERSEDIA', lockType: 'KUNCI_BIASA', lockStatus: 'OK' },
         ],
         facilities: [
-          { id: 'ben-roof', name: 'Rooftop Communal Lounge & Area Santai', type: 'ROOFTOP', floor: 3, hasWifi: true, wifiStatus: 'PASS', wifiSpeedMbps: 60, hasTv: false, tvStatus: 'NA', hasLock: true, lockType: 'SMARTLOCK_HANDLE', lockStatus: 'PASS', notes: 'Pintu akses rooftop magnetic lock jam 22:00' },
+          { id: 'ben-roof', name: 'Rooftop Communal Lounge & Area Santai', type: 'ROOFTOP', floor: 3, hasWifi: true, wifiStatus: 'OK', wifiSpeedMbps: 60, hasTv: false, tvStatus: 'BELUM_TERSEDIA', hasLock: true, lockType: 'SMARTLOCK_HANDLE', lockStatus: 'OK', notes: 'Pintu akses rooftop magnetic lock jam 22:00' },
         ],
       },
     ],
@@ -1147,6 +1156,7 @@ export const INITIAL_BUILDINGS: Building[] = [
     wifiStandardProfile: {
       guestSsid: '@Rukita Bangka Kemang',
       guestPassword: '',
+      configModel: 'MULTI',
       isCaptivePortal: true,
       opsSsid: 'Rukita-Ops-Kemang',
       opsPassword: 'Ops#Kemang2026',
@@ -1223,13 +1233,13 @@ export const INITIAL_BUILDINGS: Building[] = [
         floorNumber: 1,
         name: 'Lantai 1',
         rooms: [
-          { id: 'kmg-101', number: '101', floor: 1, hasTv: true, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 90, tvType: 'ANDROID_GOOGLE_TV', tvStatus: 'PASS', lockType: 'KUNCI_BIASA', lockStatus: 'PASS' },
-          { id: 'kmg-102', number: '102', floor: 1, hasTv: false, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 85, tvType: 'NONE', tvStatus: 'NA', lockType: 'KUNCI_BIASA', lockStatus: 'PASS' },
+          { id: 'kmg-101', number: '101', floor: 1, hasTv: true, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 90, tvType: 'ANDROID_TV', tvStatus: 'OK', lockType: 'KUNCI_BIASA', lockStatus: 'OK' },
+          { id: 'kmg-102', number: '102', floor: 1, hasTv: false, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 85, tvType: 'NONE', tvStatus: 'BELUM_TERSEDIA', lockType: 'KUNCI_BIASA', lockStatus: 'OK' },
         ],
         facilities: [
-          { id: 'kmg-gate', name: 'Gerbang Akses Kartu RFID', type: 'PAGAR_GERBANG', floor: 1, hasWifi: true, wifiStatus: 'PASS', wifiSpeedMbps: 70, hasTv: false, tvStatus: 'NA', hasLock: true, lockType: 'SMARTLOCK_GATE_ACCESS', lockStatus: 'PASS' },
-          { id: 'kmg-parking', name: 'Area Parkir Motor & Mobil', type: 'PARKIRAN', floor: 1, hasWifi: true, wifiStatus: 'PASS', wifiSpeedMbps: 70, hasTv: false, tvStatus: 'NA', hasLock: false, lockType: 'KUNCI_BIASA', lockStatus: 'NA', notes: 'CCTV parkir & Wi-Fi Biznet 70M' },
-          { id: 'kmg-kitchen', name: 'Dapur Bersama Modern', type: 'DAPUR', floor: 1, hasWifi: true, wifiStatus: 'PASS', wifiSpeedMbps: 95, hasTv: false, tvStatus: 'NA', hasLock: false, lockType: 'KUNCI_BIASA', lockStatus: 'NA' },
+          { id: 'kmg-gate', name: 'Gerbang Akses Kartu RFID', type: 'PAGAR_GERBANG', floor: 1, hasWifi: true, wifiStatus: 'OK', wifiSpeedMbps: 70, hasTv: false, tvStatus: 'BELUM_TERSEDIA', hasLock: true, lockType: 'SMARTLOCK_GATE_ACCESS', lockStatus: 'OK' },
+          { id: 'kmg-parking', name: 'Area Parkir Motor & Mobil', type: 'PARKIRAN', floor: 1, hasWifi: true, wifiStatus: 'OK', wifiSpeedMbps: 70, hasTv: false, tvStatus: 'BELUM_TERSEDIA', hasLock: false, lockType: 'KUNCI_BIASA', lockStatus: 'BELUM_TERSEDIA', notes: 'CCTV parkir & Wi-Fi Biznet 70M' },
+          { id: 'kmg-kitchen', name: 'Dapur Bersama Modern', type: 'DAPUR', floor: 1, hasWifi: true, wifiStatus: 'OK', wifiSpeedMbps: 95, hasTv: false, tvStatus: 'BELUM_TERSEDIA', hasLock: false, lockType: 'KUNCI_BIASA', lockStatus: 'BELUM_TERSEDIA' },
         ],
       },
       {
@@ -1237,12 +1247,12 @@ export const INITIAL_BUILDINGS: Building[] = [
         floorNumber: 2,
         name: 'Lantai 2',
         rooms: [
-          { id: 'kmg-201', number: '201', floor: 2, hasTv: false, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 80, tvType: 'NONE', tvStatus: 'NA', lockType: 'KUNCI_BIASA', lockStatus: 'PASS' },
-          { id: 'kmg-202', number: '202', floor: 2, hasTv: false, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 80, tvType: 'NONE', tvStatus: 'NA', lockType: 'KUNCI_BIASA', lockStatus: 'PASS' },
+          { id: 'kmg-201', number: '201', floor: 2, hasTv: false, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 80, tvType: 'NONE', tvStatus: 'BELUM_TERSEDIA', lockType: 'KUNCI_BIASA', lockStatus: 'OK' },
+          { id: 'kmg-202', number: '202', floor: 2, hasTv: false, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 80, tvType: 'NONE', tvStatus: 'BELUM_TERSEDIA', lockType: 'KUNCI_BIASA', lockStatus: 'OK' },
         ],
         facilities: [
-          { id: 'kmg-rooftop', name: 'Rooftop Communal & Garden Cafe', type: 'ROOFTOP', floor: 2, hasWifi: true, wifiStatus: 'PASS', wifiSpeedMbps: 85, hasTv: false, tvStatus: 'NA', hasLock: true, lockType: 'SMARTLOCK_HANDLE', lockStatus: 'PASS', notes: 'Pintu akses rooftop smartlock magnetic' },
-          { id: 'kmg-balcony', name: 'Balcony Cafe', type: 'BALCONY', floor: 2, hasWifi: true, wifiStatus: 'PASS', wifiSpeedMbps: 75, hasTv: false, tvStatus: 'NA', hasLock: false, lockType: 'KUNCI_BIASA', lockStatus: 'NA' },
+          { id: 'kmg-rooftop', name: 'Rooftop Communal & Garden Cafe', type: 'ROOFTOP', floor: 2, hasWifi: true, wifiStatus: 'OK', wifiSpeedMbps: 85, hasTv: false, tvStatus: 'BELUM_TERSEDIA', hasLock: true, lockType: 'SMARTLOCK_HANDLE', lockStatus: 'OK', notes: 'Pintu akses rooftop smartlock magnetic' },
+          { id: 'kmg-balcony', name: 'Balcony Cafe', type: 'BALCONY', floor: 2, hasWifi: true, wifiStatus: 'OK', wifiSpeedMbps: 75, hasTv: false, tvStatus: 'BELUM_TERSEDIA', hasLock: false, lockType: 'KUNCI_BIASA', lockStatus: 'BELUM_TERSEDIA' },
         ],
       },
     ],
@@ -1292,6 +1302,7 @@ export const INITIAL_BUILDINGS: Building[] = [
     wifiStandardProfile: {
       guestSsid: 'Oxygen-Default-AP-Foresta',
       guestPassword: 'oxygenuser123',
+      configModel: 'SINGLE',
       isCaptivePortal: false,
       opsSsid: '',
       opsPassword: '',
@@ -1366,14 +1377,14 @@ export const INITIAL_BUILDINGS: Building[] = [
         floorNumber: 1,
         name: 'Lantai 1',
         rooms: [
-          { id: 'bsd-101', number: '101', floor: 1, hasTv: true, hasSmartlock: true, wifiStatus: 'PASS', wifiSpeedMbps: 120, tvType: 'ANDROID_GOOGLE_TV', tvStatus: 'PASS', lockType: 'SMARTLOCK_HANDLE', lockStatus: 'PASS' },
-          { id: 'bsd-102', number: '102', floor: 1, hasTv: false, hasSmartlock: false, wifiStatus: 'PASS', wifiSpeedMbps: 110, tvType: 'NONE', tvStatus: 'NA', lockType: 'KUNCI_BIASA', lockStatus: 'PASS' },
+          { id: 'bsd-101', number: '101', floor: 1, hasTv: true, hasSmartlock: true, wifiStatus: 'OK', wifiSpeedMbps: 120, tvType: 'ANDROID_TV', tvStatus: 'OK', lockType: 'SMARTLOCK_HANDLE', lockStatus: 'OK' },
+          { id: 'bsd-102', number: '102', floor: 1, hasTv: false, hasSmartlock: false, wifiStatus: 'OK', wifiSpeedMbps: 110, tvType: 'NONE', tvStatus: 'BELUM_TERSEDIA', lockType: 'KUNCI_BIASA', lockStatus: 'OK' },
         ],
         facilities: [
-          { id: 'bsd-gate', name: 'Smart Gate RFID & PIN', type: 'PAGAR_GERBANG', floor: 1, hasWifi: true, wifiStatus: 'PASS', wifiSpeedMbps: 80, hasTv: false, tvStatus: 'NA', hasLock: true, lockType: 'SMARTLOCK_GATE_ACCESS', lockStatus: 'PASS' },
-          { id: 'bsd-parking', name: 'Area Parkir Khusus Penghuni', type: 'PARKIRAN', floor: 1, hasWifi: true, wifiStatus: 'PASS', wifiSpeedMbps: 100, hasTv: false, tvStatus: 'NA', hasLock: true, lockType: 'SMARTLOCK_GATE_ACCESS', lockStatus: 'PASS', notes: 'Barrier gate card reader' },
-          { id: 'bsd-lounge', name: 'Communal Coworking Space', type: 'COMMUNAL_LOUNGE', floor: 1, hasWifi: true, wifiStatus: 'PASS', wifiSpeedMbps: 150, hasTv: true, tvStatus: 'PASS', hasLock: false, lockType: 'KUNCI_BIASA', lockStatus: 'NA' },
-          { id: 'bsd-rooftop', name: 'Rooftop Communal & BBQ Area', type: 'ROOFTOP', floor: 1, hasWifi: true, wifiStatus: 'PASS', wifiSpeedMbps: 120, hasTv: true, tvStatus: 'PASS', hasLock: true, lockType: 'SMARTLOCK_HANDLE', lockStatus: 'PASS', notes: 'Google TV 55" & Wi-Fi outdoor 120M' },
+          { id: 'bsd-gate', name: 'Smart Gate RFID & PIN', type: 'PAGAR_GERBANG', floor: 1, hasWifi: true, wifiStatus: 'OK', wifiSpeedMbps: 80, hasTv: false, tvStatus: 'BELUM_TERSEDIA', hasLock: true, lockType: 'SMARTLOCK_GATE_ACCESS', lockStatus: 'OK' },
+          { id: 'bsd-parking', name: 'Area Parkir Khusus Penghuni', type: 'PARKIRAN', floor: 1, hasWifi: true, wifiStatus: 'OK', wifiSpeedMbps: 100, hasTv: false, tvStatus: 'BELUM_TERSEDIA', hasLock: true, lockType: 'SMARTLOCK_GATE_ACCESS', lockStatus: 'OK', notes: 'Barrier gate card reader' },
+          { id: 'bsd-lounge', name: 'Communal Coworking Space', type: 'COMMUNAL_LOUNGE', floor: 1, hasWifi: true, wifiStatus: 'OK', wifiSpeedMbps: 150, hasTv: true, tvStatus: 'OK', hasLock: false, lockType: 'KUNCI_BIASA', lockStatus: 'BELUM_TERSEDIA' },
+          { id: 'bsd-rooftop', name: 'Rooftop Communal & BBQ Area', type: 'ROOFTOP', floor: 1, hasWifi: true, wifiStatus: 'OK', wifiSpeedMbps: 120, hasTv: true, tvStatus: 'OK', hasLock: true, lockType: 'SMARTLOCK_HANDLE', lockStatus: 'OK', notes: 'Google TV 55" & Wi-Fi outdoor 120M' },
         ],
       },
     ],
@@ -1400,7 +1411,7 @@ export const INITIAL_BUILDINGS: Building[] = [
   },
 ];
 
-export const INITIAL_ISSUES: ColivingIssue[] = [
+export const SAMPLE_ISSUES: ColivingIssue[] = [
   {
     id: 'ISS-01',
     buildingId: 'bld-tomang',
@@ -1439,3 +1450,14 @@ export const INITIAL_ISSUES: ColivingIssue[] = [
     createdAt: '19 Okt 2026',
   },
 ];
+
+/**
+ * Kondisi awal aplikasi: KOSONG.
+ *
+ * Aplikasi ini dipakai tim opening untuk properti nyata, jadi tidak boleh ada
+ * properti/kendala karangan yang muncul sendiri setelah refresh. Semua gedung
+ * dibuat lewat form "Gedung baru" dan disimpan ke localStorage.
+ */
+export const INITIAL_BUILDINGS: Building[] = [];
+export const INITIAL_ISSUES: ColivingIssue[] = [];
+

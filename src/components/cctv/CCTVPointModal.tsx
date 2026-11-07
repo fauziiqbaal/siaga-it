@@ -94,20 +94,20 @@ export const CCTVPointModal: React.FC<CCTVPointModalProps> = ({
         // Map cctvStatus
         if (point.cctvStatus) {
           setCctvStatus(point.cctvStatus);
-        } else if (point.status === 'PASS') {
+        } else if (point.status === 'OK') {
           setCctvStatus('ONLINE');
         } else if (point.installationStatus === 'BELUM_TERPASANG') {
           setCctvStatus('PERLU_INSTALASI');
         } else if (point.installationStatus === 'PERLU_RELOKASI' || point.notes?.toLowerCase().includes('reposisi')) {
           setCctvStatus('PERLU_REPOSISI');
-        } else if (point.status === 'FAIL') {
+        } else if (point.status === 'RUSAK') {
           setCctvStatus('OFFLINE');
         } else {
           setCctvStatus('BELUM_DIKETAHUI');
         }
 
         setNotes(point.notes || '');
-        setCreateIssueNow(point.status !== 'PASS');
+        setCreateIssueNow(point.status !== 'OK');
         setTakeoverStatus(point.takeoverStatus || 'SUDAH_TAKEOVER');
         setMasterAccount(point.masterAccount || 'siaga.it@rukita.co');
       } else {
@@ -133,20 +133,20 @@ export const CCTVPointModal: React.FC<CCTVPointModalProps> = ({
     const finalLocationName = `Titik ${finalNumber}`;
 
     // Map operational status to CheckStatus and installationStatus
-    let checkStatus: CheckStatus = 'PASS';
+    let checkStatus: CheckStatus = 'OK';
     let installStatus: 'TERPASANG' | 'BELUM_TERPASANG' | 'PERLU_RELOKASI' = 'TERPASANG';
 
     if (cctvStatus === 'ONLINE') {
-      checkStatus = 'PASS';
+      checkStatus = 'OK';
       installStatus = 'TERPASANG';
     } else if (cctvStatus === 'OFFLINE') {
-      checkStatus = 'FAIL';
+      checkStatus = 'RUSAK';
       installStatus = 'TERPASANG';
     } else if (cctvStatus === 'PERLU_REPOSISI') {
-      checkStatus = 'FAIL';
+      checkStatus = 'NEED_IMPROVE';
       installStatus = 'PERLU_RELOKASI';
     } else if (cctvStatus === 'PERLU_INSTALASI') {
-      checkStatus = 'PENDING';
+      checkStatus = 'BELUM_TERSEDIA';
       installStatus = 'BELUM_TERPASANG';
     } else if (cctvStatus === 'BELUM_DIKETAHUI') {
       checkStatus = 'PENDING';

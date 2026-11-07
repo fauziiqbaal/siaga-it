@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Building, FacilityType, FloorConfig, FloorFacility, LockType, RoomColiving, TvType, InternetConnection, InternetRole, InternetStatus, BillingTakeoverStatus, CheckStatus, TtlockSupportStatus, TakeoverStatus, SimpleUser } from '../../types/hotel';
+import { Building, FacilityType, FloorConfig, FloorFacility, LockType, RoomColiving, TvType, InternetConnection, InternetRole, InternetStatus, BillingTakeoverStatus, CheckStatus, TtlockSupportStatus, TakeoverStatus, SimpleUser, tvTypeLabel } from '../../types/hotel';
 import { Building2, Plus, Trash2, Edit2, Check, X, Layers, DoorClosed, Utensils, Wifi, Tv, KeyRound, Sparkles, Search, Car, Sun, Shield, Globe, Zap, Copy, Phone, ExternalLink, Radio, Lock, Mail, CheckCircle2, AlertCircle, PenTool, Eye, ChevronDown, ChevronUp, Camera } from 'lucide-react';
 import { FloorPlanDrawingModal } from './FloorPlanDrawingModal';
 import { LiveCameraModal } from '../common/LiveCameraModal';
@@ -46,7 +46,7 @@ export const PropertyManagement: React.FC<PropertyManagementProps> = ({
   const [editingRoom, setEditingRoom] = useState<RoomColiving | null>(null);
   const [editRoomNumber, setEditRoomNumber] = useState('');
   const [editRoomHasTv, setEditRoomHasTv] = useState(false);
-  const [editRoomTvType, setEditRoomTvType] = useState<TvType>('ANDROID_GOOGLE_TV');
+  const [editRoomTvType, setEditRoomTvType] = useState<TvType>('ANDROID_TV');
   const [editRoomHasSmartlock, setEditRoomHasSmartlock] = useState(false);
   const [editRoomLockType, setEditRoomLockType] = useState<LockType>('SMARTLOCK_HANDLE');
   const [editRoomTtlockSupport, setEditRoomTtlockSupport] = useState<TtlockSupportStatus>('SUPPORT_TTLOCK');
@@ -169,8 +169,8 @@ export const PropertyManagement: React.FC<PropertyManagementProps> = ({
       number: newRoomNumber.trim(),
       floor: targetFloor.floorNumber,
       hasTv: newRoomHasTv,
-      tvStatus: newRoomHasTv ? 'PENDING' : 'NA',
-      tvType: newRoomHasTv ? 'ANDROID_GOOGLE_TV' : 'NONE',
+      tvStatus: newRoomHasTv ? 'PENDING' : 'BELUM_TERSEDIA',
+      tvType: newRoomHasTv ? 'ANDROID_TV' : 'NONE',
       hasSmartlock: newRoomHasSmartlock,
       lockType: newRoomHasSmartlock ? 'SMARTLOCK_HANDLE' : 'KUNCI_BIASA',
       lockStatus: 'PENDING',
@@ -211,8 +211,8 @@ export const PropertyManagement: React.FC<PropertyManagementProps> = ({
             rooms: f.rooms.map(r => r.id === room.id ? {
               ...r,
               hasTv: nextHasTv,
-              tvStatus: nextHasTv ? (r.tvStatus === 'NA' ? 'PENDING' : r.tvStatus) : 'NA',
-              tvType: nextHasTv ? 'ANDROID_GOOGLE_TV' : 'NONE',
+              tvStatus: nextHasTv ? (r.tvStatus === 'BELUM_TERSEDIA' ? 'PENDING' : r.tvStatus) : 'BELUM_TERSEDIA',
+              tvType: nextHasTv ? 'ANDROID_TV' : 'NONE',
             } : r),
           };
         }
@@ -256,13 +256,13 @@ export const PropertyManagement: React.FC<PropertyManagementProps> = ({
       type: newFacilityType,
       floor: targetFloor.floorNumber,
       hasWifi: facHasWifi,
-      wifiStatus: facHasWifi ? 'PENDING' : 'NA',
+      wifiStatus: facHasWifi ? 'PENDING' : 'BELUM_TERSEDIA',
       wifiSpeedMbps: 50,
       hasTv: facHasTv,
-      tvStatus: facHasTv ? 'PENDING' : 'NA',
+      tvStatus: facHasTv ? 'PENDING' : 'BELUM_TERSEDIA',
       hasLock: facHasLock,
       lockType: facHasLock ? 'SMARTLOCK_HANDLE' : 'NONE',
-      lockStatus: facHasLock ? 'PENDING' : 'NA',
+      lockStatus: facHasLock ? 'PENDING' : 'BELUM_TERSEDIA',
     };
 
     const updatedFloors = currentBuilding.floors.map(f => {
@@ -289,7 +289,7 @@ export const PropertyManagement: React.FC<PropertyManagementProps> = ({
     setEditingRoom(room);
     setEditRoomNumber(room.number);
     setEditRoomHasTv(room.hasTv);
-    setEditRoomTvType(room.tvType || 'ANDROID_GOOGLE_TV');
+    setEditRoomTvType(room.tvType || 'ANDROID_TV');
     setEditRoomHasSmartlock(room.hasSmartlock);
     setEditRoomLockType(room.lockType || 'SMARTLOCK_HANDLE');
     setEditRoomTtlockSupport(room.ttlockSupport || 'SUPPORT_TTLOCK');
@@ -314,15 +314,15 @@ export const PropertyManagement: React.FC<PropertyManagementProps> = ({
                 hasTv: editRoomHasTv,
                 tvType: editRoomHasTv ? editRoomTvType : 'NONE',
                 tvStatus: (editRoomHasTv
-                  ? (tvChanged ? 'PENDING' : r.tvStatus === 'NA' ? 'PENDING' : r.tvStatus)
-                  : 'NA') as CheckStatus,
+                  ? (tvChanged ? 'PENDING' : r.tvStatus === 'BELUM_TERSEDIA' ? 'PENDING' : r.tvStatus)
+                  : 'BELUM_TERSEDIA') as CheckStatus,
                 hasSmartlock: editRoomHasSmartlock,
                 lockType: editRoomHasSmartlock ? editRoomLockType : 'KUNCI_BIASA',
                 ttlockSupport: editRoomHasSmartlock ? editRoomTtlockSupport : undefined,
                 ttlockTakeoverStatus: editRoomHasSmartlock && editRoomTtlockSupport === 'SUPPORT_TTLOCK' ? editRoomTtlockTakeover : undefined,
                 lockStatus: (editRoomHasSmartlock
-                  ? (lockChanged ? 'PENDING' : r.lockStatus === 'NA' ? 'PENDING' : r.lockStatus)
-                  : 'NA') as CheckStatus,
+                  ? (lockChanged ? 'PENDING' : r.lockStatus === 'BELUM_TERSEDIA' ? 'PENDING' : r.lockStatus)
+                  : 'BELUM_TERSEDIA') as CheckStatus,
               };
             }
             return r;
@@ -378,12 +378,12 @@ export const PropertyManagement: React.FC<PropertyManagementProps> = ({
                 name: editFacilityName.trim(),
                 type: editFacilityType,
                 hasTv: editFacHasTv,
-                tvStatus: (editFacHasTv ? (fac.tvStatus === 'NA' ? 'PENDING' : fac.tvStatus) : 'NA') as CheckStatus,
+                tvStatus: (editFacHasTv ? (fac.tvStatus === 'BELUM_TERSEDIA' ? 'PENDING' : fac.tvStatus) : 'BELUM_TERSEDIA') as CheckStatus,
                 hasLock: editFacHasLock,
                 lockType: editFacHasLock ? editFacLockType : 'NONE',
                 ttlockSupport: editFacHasLock ? editFacTtlockSupport : undefined,
                 ttlockTakeoverStatus: editFacHasLock && editFacTtlockSupport === 'SUPPORT_TTLOCK' ? editFacTtlockTakeover : undefined,
-                lockStatus: (editFacHasLock ? (fac.lockStatus === 'NA' ? 'PENDING' : fac.lockStatus) : 'NA') as CheckStatus,
+                lockStatus: (editFacHasLock ? (fac.lockStatus === 'BELUM_TERSEDIA' ? 'PENDING' : fac.lockStatus) : 'BELUM_TERSEDIA') as CheckStatus,
               };
             }
             return fac;
@@ -1289,7 +1289,7 @@ export const PropertyManagement: React.FC<PropertyManagementProps> = ({
                             {room.hasTv && (
                               <span
                                 className="px-1.5 py-0.5 rounded font-medium bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-500/30"
-                                title={room.tvType === 'CABLE_TV' ? 'TV Kabel' : 'Android / Google TV'}
+                                title={tvTypeLabel(room.tvType)}
                               >
                                 📺 Ada TV
                               </span>
@@ -1721,25 +1721,25 @@ export const PropertyManagement: React.FC<PropertyManagementProps> = ({
                     <div className="grid grid-cols-2 gap-1.5">
                       <button
                         type="button"
-                        onClick={() => setEditRoomTvType('ANDROID_GOOGLE_TV')}
+                        onClick={() => setEditRoomTvType('ANDROID_TV')}
                         className={`px-2 py-1 rounded text-[11px] border font-medium transition-colors ${
-                          editRoomTvType === 'ANDROID_GOOGLE_TV'
+                          editRoomTvType === 'ANDROID_TV'
                             ? 'bg-purple-600 text-white border-purple-600 font-bold'
                             : 'bg-background border-border text-muted-foreground hover:bg-muted'
                         }`}
                       >
-                        Android / Google TV
+                        Android TV
                       </button>
                       <button
                         type="button"
-                        onClick={() => setEditRoomTvType('CABLE_TV')}
+                        onClick={() => setEditRoomTvType('TV_DIGITAL')}
                         className={`px-2 py-1 rounded text-[11px] border font-medium transition-colors ${
-                          editRoomTvType === 'CABLE_TV'
+                          editRoomTvType === 'TV_DIGITAL'
                             ? 'bg-purple-600 text-white border-purple-600 font-bold'
                             : 'bg-background border-border text-muted-foreground hover:bg-muted'
                         }`}
                       >
-                        TV Kabel / STB
+                        TV Digital
                       </button>
                     </div>
                   </div>

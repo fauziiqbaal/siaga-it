@@ -144,8 +144,8 @@ export const CCTVChecklist: React.FC<CCTVChecklistProps> = ({
   // Resolve CCTV operational status
   const resolveCctvStatus = (point: CCTVPoint): CCTVOperationalStatus => {
     if (point.cctvStatus) return point.cctvStatus;
-    if (point.status === 'PASS') return 'ONLINE';
-    if (point.status === 'FAIL') {
+    if (point.status === 'OK') return 'ONLINE';
+    if (point.status === 'RUSAK') {
       if (point.notes?.toLowerCase().includes('reposisi') || point.installationStatus === 'PERLU_RELOKASI') {
         return 'PERLU_REPOSISI';
       }
@@ -191,20 +191,20 @@ export const CCTVChecklist: React.FC<CCTVChecklistProps> = ({
 
   // Change point status from dropdown
   const handleChangeStatusDropdown = (point: CCTVPoint, newStatus: CCTVOperationalStatus, pointNum: number) => {
-    let checkStatus: CheckStatus = 'PASS';
+    let checkStatus: CheckStatus = 'OK';
     let installStatus: 'TERPASANG' | 'BELUM_TERPASANG' | 'PERLU_RELOKASI' = 'TERPASANG';
 
     if (newStatus === 'ONLINE') {
-      checkStatus = 'PASS';
+      checkStatus = 'OK';
       installStatus = 'TERPASANG';
     } else if (newStatus === 'OFFLINE') {
-      checkStatus = 'FAIL';
+      checkStatus = 'RUSAK';
       installStatus = 'TERPASANG';
     } else if (newStatus === 'PERLU_REPOSISI') {
-      checkStatus = 'FAIL';
+      checkStatus = 'NEED_IMPROVE';
       installStatus = 'PERLU_RELOKASI';
     } else if (newStatus === 'PERLU_INSTALASI') {
-      checkStatus = 'PENDING';
+      checkStatus = 'BELUM_TERSEDIA';
       installStatus = 'BELUM_TERPASANG';
     } else if (newStatus === 'BELUM_DIKETAHUI') {
       checkStatus = 'PENDING';

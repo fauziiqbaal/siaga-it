@@ -7,9 +7,28 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check:scoring": "node --experimental-strip-types scripts/check-scoring.ts",
+    "check:storage": "node --experimental-strip-types scripts/check-storage.ts",
+    "check:crud": "node --experimental-strip-types scripts/check-crud.ts",
+    "check:render": "vite build --ssr scripts/ssr-check.tsx --outDir .ssr-check && node .ssr-check/ssr-check.js",
+    "check:all": "npm run check:storage && npm run check:crud && npm run check:scoring && npm run check:render",
+    "check:e2e": "node scripts/e2e-browser.mjs",
+    "check:sync": "node scripts/check-sync.mjs",
+    "check:native": "node scripts/check-native.mjs",
+    "ctx:audit": "node scripts/ctx-audit.mjs",
+    "report:pdf": "vite build --ssr scripts/report-ssr.tsx --outDir .report-build && node .report-build/report-ssr.js",
+    "fixture:backup": "node --experimental-strip-types scripts/fixtures/emit-backup.ts",
+    "android:sync": "npm run build && npx cap sync android",
+    "android:open": "npx cap open android",
+    "android:apk": "npm run build && npx cap sync android && cd android && gradlew.bat assembleDebug",
+    "shots": "npm run report:pdf && npm run shots:app",
+    "shots:app": "vite build --ssr scripts/app-shots.tsx --outDir .shots-build && node .shots-build/app-shots.js",
+    "shots:live": "node scripts/live-shots.mjs"
   },
   "dependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/core": "^8.6.0",
     "@types/canvas-confetti": "^1.9.0",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
@@ -20,6 +39,7 @@
     "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.6.0",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",

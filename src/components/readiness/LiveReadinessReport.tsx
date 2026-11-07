@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Building, ColivingIssue, SimpleUser, InspectionVisit, VisitType, EvidenceMedia, CCTV_CONNECTIVITY_CONFIG, CCTVConnectivityType } from '../../types/hotel';
+import { Building, ColivingIssue, SimpleUser, InspectionVisit, VisitType, EvidenceMedia, CCTV_CONNECTIVITY_CONFIG, CCTVConnectivityType, isCheckProblem } from '../../types/hotel';
 import { 
   CheckCircle2, 
   AlertTriangle, 
@@ -121,8 +121,8 @@ export const LiveReadinessReport: React.FC<LiveReadinessReportProps> = ({
 
   const wifiFacilities = allFacilities.filter(f => f.hasWifi);
   const totalWifiEndpoints = allRooms.length + wifiFacilities.length;
-  const wifiPassRooms = allRooms.filter(r => r.wifiStatus === 'PASS').length;
-  const wifiPassFac = wifiFacilities.filter(f => f.wifiStatus === 'PASS').length;
+  const wifiPassRooms = allRooms.filter(r => r.wifiStatus === 'OK').length;
+  const wifiPassFac = wifiFacilities.filter(f => f.wifiStatus === 'OK').length;
   const wifiPassTotal = wifiPassRooms + wifiPassFac;
   const wifiReadiness = totalWifiEndpoints > 0 ? Math.round((wifiPassTotal / totalWifiEndpoints) * 100) : 100;
   
@@ -134,8 +134,8 @@ export const LiveReadinessReport: React.FC<LiveReadinessReportProps> = ({
   const smartlockRooms = allRooms.filter(r => r.hasSmartlock);
   const smartlockFacilities = allFacilities.filter(f => f.hasLock);
   const totalLocks = smartlockRooms.length + smartlockFacilities.length;
-  const lockPassRooms = smartlockRooms.filter(r => r.lockStatus === 'PASS').length;
-  const lockPassFac = smartlockFacilities.filter(f => f.lockStatus === 'PASS').length;
+  const lockPassRooms = smartlockRooms.filter(r => r.lockStatus === 'OK').length;
+  const lockPassFac = smartlockFacilities.filter(f => f.lockStatus === 'OK').length;
   const lockPassTotal = lockPassRooms + lockPassFac;
   const lockReadiness = totalLocks > 0 ? Math.round((lockPassTotal / totalLocks) * 100) : 100;
 
@@ -143,14 +143,14 @@ export const LiveReadinessReport: React.FC<LiveReadinessReportProps> = ({
   const tvRooms = allRooms.filter(r => r.hasTv);
   const tvFacilities = allFacilities.filter(f => f.hasTv);
   const totalTvs = tvRooms.length + tvFacilities.length;
-  const tvPassRooms = tvRooms.filter(r => r.tvStatus === 'PASS').length;
-  const tvPassFac = tvFacilities.filter(f => f.tvStatus === 'PASS').length;
+  const tvPassRooms = tvRooms.filter(r => r.tvStatus === 'OK').length;
+  const tvPassFac = tvFacilities.filter(f => f.tvStatus === 'OK').length;
   const tvPassTotal = tvPassRooms + tvPassFac;
   const tvReadiness = totalTvs > 0 ? Math.round((tvPassTotal / totalTvs) * 100) : 100;
 
   // 4. Calculate CCTV Readiness
   const totalCctv = building.cctvPoints.length;
-  const cctvPass = building.cctvPoints.filter(p => p.status === 'PASS').length;
+  const cctvPass = building.cctvPoints.filter(p => p.status === 'OK').length;
   const cctvReadiness = totalCctv > 0 ? Math.round((cctvPass / totalCctv) * 100) : 100;
 
   // 5. Calculate IT Devices / Asset Readiness
@@ -725,19 +725,19 @@ Generated via Siaga IT Operations`;
             const fFac = floor.facilities;
             
             // Wi-Fi endpoints
-            const fWifiOk = fRooms.filter(r => r.wifiStatus === 'PASS').length + fFac.filter(f => f.hasWifi && f.wifiStatus === 'PASS').length;
+            const fWifiOk = fRooms.filter(r => r.wifiStatus === 'OK').length + fFac.filter(f => f.hasWifi && f.wifiStatus === 'OK').length;
             const fWifiTotal = fRooms.length + fFac.filter(f => f.hasWifi).length;
 
             // Smartlock endpoints
             const fLockRooms = fRooms.filter(r => r.hasSmartlock);
             const fLockFac = fFac.filter(f => f.hasLock);
-            const fLockOk = fLockRooms.filter(r => r.lockStatus === 'PASS').length + fLockFac.filter(f => f.lockStatus === 'PASS').length;
+            const fLockOk = fLockRooms.filter(r => r.lockStatus === 'OK').length + fLockFac.filter(f => f.lockStatus === 'OK').length;
             const fLockTotal = fLockRooms.length + fLockFac.length;
 
             // TV endpoints
             const fTvRooms = fRooms.filter(r => r.hasTv);
             const fTvFac = fFac.filter(f => f.hasTv);
-            const fTvOk = fTvRooms.filter(r => r.tvStatus === 'PASS').length + fTvFac.filter(f => f.tvStatus === 'PASS').length;
+            const fTvOk = fTvRooms.filter(r => r.tvStatus === 'OK').length + fTvFac.filter(f => f.tvStatus === 'OK').length;
             const fTvTotal = fTvRooms.length + fTvFac.length;
 
             // Combined total floor availability
@@ -844,8 +844,8 @@ Generated via Siaga IT Operations`;
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 print:grid-cols-4 gap-2 print:gap-1.5">
                     {/* 1. Fasilitas Bersama Mini Cards */}
                     {fFac.map(fac => {
-                      const isOk = fac.wifiStatus === 'PASS' && (!fac.hasTv || fac.tvStatus === 'PASS') && (!fac.hasLock || fac.lockStatus === 'PASS');
-                      const hasIssue = fac.wifiStatus === 'FAIL' || (fac.hasTv && fac.tvStatus === 'FAIL') || (fac.hasLock && fac.lockStatus === 'FAIL');
+                      const isOk = fac.wifiStatus === 'OK' && (!fac.hasTv || fac.tvStatus === 'OK') && (!fac.hasLock || fac.lockStatus === 'OK');
+                      const hasIssue = isCheckProblem(fac.wifiStatus) || (fac.hasTv && isCheckProblem(fac.tvStatus)) || (fac.hasLock && isCheckProblem(fac.lockStatus));
 
                       return (
                         <div
@@ -870,7 +870,7 @@ Generated via Siaga IT Operations`;
                                   ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 print:bg-emerald-100 print:text-emerald-800'
                                   : 'bg-muted text-muted-foreground print:bg-slate-200 print:text-slate-800'
                               }`}>
-                                {hasIssue ? 'FAIL' : isOk ? 'OK' : 'PENDING'}
+                                {hasIssue ? 'PERLU TINDAKAN' : isOk ? 'OK' : 'BELUM'}
                               </span>
                             </div>
                             <span className="text-[9.5px] print:text-[7.5px] text-muted-foreground print:text-slate-600 block truncate">
@@ -901,13 +901,13 @@ Generated via Siaga IT Operations`;
                             {(fac.hasLock || fac.hasTv) && (
                               <div className="flex items-center justify-between text-[9px] print:text-[7px] text-muted-foreground print:text-slate-600 pt-0.5">
                                 {fac.hasLock && (
-                                  <span className={fac.lockStatus === 'PASS' ? 'text-emerald-600 print:text-emerald-800 font-bold' : 'text-rose-600 font-bold'}>
-                                    🚪 {fac.lockStatus === 'PASS' ? 'Lock OK' : 'Lock Fail'}
+                                  <span className={fac.lockStatus === 'OK' ? 'text-emerald-600 print:text-emerald-800 font-bold' : 'text-rose-600 font-bold'}>
+                                    🚪 {fac.lockStatus === 'OK' ? 'Lock OK' : 'Lock Fail'}
                                   </span>
                                 )}
                                 {fac.hasTv && (
-                                  <span className={fac.tvStatus === 'PASS' ? 'text-purple-600 print:text-purple-800 font-bold' : 'text-rose-600 font-bold'}>
-                                    📺 {fac.tvStatus === 'PASS' ? 'TV OK' : 'TV Fail'}
+                                  <span className={fac.tvStatus === 'OK' ? 'text-purple-600 print:text-purple-800 font-bold' : 'text-rose-600 font-bold'}>
+                                    📺 {fac.tvStatus === 'OK' ? 'TV OK' : 'TV Fail'}
                                   </span>
                                 )}
                               </div>
@@ -925,8 +925,8 @@ Generated via Siaga IT Operations`;
 
                     {/* 2. Kamar Mini Cards */}
                     {fRooms.map(rm => {
-                      const isOk = rm.wifiStatus === 'PASS' && (!rm.hasTv || rm.tvStatus === 'PASS') && (!rm.hasSmartlock || rm.lockStatus === 'PASS');
-                      const hasIssue = rm.wifiStatus === 'FAIL' || (rm.hasTv && rm.tvStatus === 'FAIL') || (rm.hasSmartlock && rm.lockStatus === 'FAIL');
+                      const isOk = rm.wifiStatus === 'OK' && (!rm.hasTv || rm.tvStatus === 'OK') && (!rm.hasSmartlock || rm.lockStatus === 'OK');
+                      const hasIssue = isCheckProblem(rm.wifiStatus) || (rm.hasTv && isCheckProblem(rm.tvStatus)) || (rm.hasSmartlock && isCheckProblem(rm.lockStatus));
 
                       return (
                         <div
@@ -951,7 +951,7 @@ Generated via Siaga IT Operations`;
                                   ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 print:bg-emerald-100 print:text-emerald-800'
                                   : 'bg-muted text-muted-foreground print:bg-slate-200 print:text-slate-800'
                               }`}>
-                                {hasIssue ? 'FAIL' : isOk ? 'OK' : 'PENDING'}
+                                {hasIssue ? 'PERLU TINDAKAN' : isOk ? 'OK' : 'BELUM'}
                               </span>
                             </div>
                             <span className="text-[9.5px] print:text-[7.5px] text-muted-foreground print:text-slate-600 block truncate">
@@ -978,16 +978,16 @@ Generated via Siaga IT Operations`;
                             <div className="flex items-center justify-between text-[9px] print:text-[7px] text-muted-foreground print:text-slate-600 pt-0.5">
                               <span>
                                 {rm.hasSmartlock ? (
-                                  <span className={rm.lockStatus === 'PASS' ? 'text-emerald-600 print:text-emerald-800 font-bold' : 'text-rose-600 font-bold'}>
-                                    🚪 {rm.lockStatus === 'PASS' ? 'Lock OK' : 'Lock Fail'}
+                                  <span className={rm.lockStatus === 'OK' ? 'text-emerald-600 print:text-emerald-800 font-bold' : 'text-rose-600 font-bold'}>
+                                    🚪 {rm.lockStatus === 'OK' ? 'Lock OK' : 'Lock Fail'}
                                   </span>
                                 ) : (
                                   <span>🚪 Kunci Biasa</span>
                                 )}
                               </span>
                               {rm.hasTv && (
-                                <span className={rm.tvStatus === 'PASS' ? 'text-purple-600 print:text-purple-800 font-bold' : 'text-rose-600 font-bold'}>
-                                  📺 {rm.tvStatus === 'PASS' ? 'TV OK' : 'TV Fail'}
+                                <span className={rm.tvStatus === 'OK' ? 'text-purple-600 print:text-purple-800 font-bold' : 'text-rose-600 font-bold'}>
+                                  📺 {rm.tvStatus === 'OK' ? 'TV OK' : 'TV Fail'}
                                 </span>
                               )}
                             </div>
@@ -1085,7 +1085,7 @@ Generated via Siaga IT Operations`;
                         ? 'ONLINE' 
                         : point.cctvStatus === 'OFFLINE' 
                         ? 'OFFLINE' 
-                        : 'PENDING'}
+                        : 'BELUM CEK'}
                     </span>
                   </div>
 

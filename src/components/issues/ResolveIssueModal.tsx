@@ -376,7 +376,7 @@ export const ResolveIssueModal: React.FC<ResolveIssueModalProps> = ({
                           <span>Unduh (Download)</span>
                         </span>
                         <span className={`text-[10px] font-bold px-1 rounded ${downloadSpeed >= 15 ? 'bg-emerald-500/15 text-emerald-600' : 'bg-rose-500/15 text-rose-600'}`}>
-                          {downloadSpeed >= 15 ? 'PASS' : 'FAIL'}
+                          {downloadSpeed >= 15 ? 'OK' : 'RUSAK'}
                         </span>
                       </div>
                       <div className="flex items-center gap-1.5">

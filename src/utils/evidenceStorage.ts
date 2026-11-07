@@ -1,4 +1,4 @@
-import { Building, EvidenceCategory, EvidenceMedia } from '../types/hotel';
+﻿import { Building, EvidenceCategory, EvidenceMedia } from '../types/hotel';
 
 // IndexedDB configuration
 const DB_NAME = 'SiagaIT_EvidenceDB';
@@ -242,78 +242,4 @@ export async function exportEvidenceManifest(building: Building): Promise<void> 
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
-}
-
-// Prepopulate initial demo evidence if DB is empty
-export async function seedInitialDemoEvidence(buildings: Building[]): Promise<void> {
-  try {
-    const existing = await getEvidenceByBuilding('bld-tomang');
-    if (existing && existing.length > 0) return;
-
-    // SVG Demo Thumbnail Data URLs so engineers see real evidence right away
-    const sampleSpeedtestSvg = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="100%" height="100%" fill="%230f172a"/><text x="200" y="70" fill="%2338bdf8" font-size="22" font-family="monospace" text-anchor="middle" font-weight="bold">SPEEDTEST OOKLA</text><circle cx="200" cy="150" r="60" fill="none" stroke="%2310b981" stroke-width="8"/><text x="200" y="155" fill="%23ffffff" font-size="28" font-family="sans-serif" text-anchor="middle" font-weight="bold">68.4</text><text x="200" y="180" fill="%2394a3b8" font-size="14" font-family="sans-serif" text-anchor="middle">Mbps Download</text><text x="200" y="240" fill="%2310b981" font-size="14" font-family="sans-serif" text-anchor="middle">PING 8ms • BIZNET FIBER</text></svg>`;
-
-    const sampleTvSvg = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="100%" height="100%" fill="%2318181b"/><rect x="40" y="40" width="320" height="190" rx="8" fill="%23000000" stroke="%233f3f46" stroke-width="4"/><text x="200" y="130" fill="%23ef4444" font-size="24" font-family="sans-serif" text-anchor="middle" font-weight="bold">YOUTUBE 4K LIVE</text><text x="200" y="160" fill="%23a1a1aa" font-size="13" font-family="sans-serif" text-anchor="middle">Streaming OK • Audio Sync Normal</text><rect x="180" y="235" width="40" height="25" fill="%2327272a"/></svg>`;
-
-    const sampleAssetApSvg = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect width="100%" height="100%" fill="%231e293b"/><circle cx="200" cy="130" r="70" fill="%23f8fafc" stroke="%2394a3b8" stroke-width="4"/><circle cx="200" cy="130" r="10" fill="%2322c55e"/><text x="200" y="240" fill="%23ffffff" font-size="15" font-family="monospace" text-anchor="middle" font-weight="bold">RUIJIE REYEE RG-RAP2200(E)</text><text x="200" y="265" fill="%2338bdf8" font-size="12" font-family="monospace" text-anchor="middle">SN: RJ-RAP-0214 • MAC: D8:0D:17:2A:3B:4C</text></svg>`;
-
-    const tomang = buildings.find(b => b.id === 'bld-tomang') || buildings[0];
-
-    const initialDemo: EvidenceMedia[] = [
-      {
-        id: 'ev-demo-1',
-        buildingId: tomang.id,
-        buildingSlug: 'rukita-tawakal-tomang',
-        entityId: 'rm-101',
-        entityName: 'Kamar 101',
-        category: 'WIFI_SPEEDTEST',
-        mediaType: 'image',
-        fileUrl: sampleSpeedtestSvg,
-        fileName: 'TMG_WIFI_SPD_RM101_20261025_101500.jpg',
-        folderPath: 'evidence/rukita-tawakal-tomang/kamar/',
-        originalName: 'speedtest_kamar101.jpg',
-        sizeBytes: 42100,
-        capturedAt: new Date(Date.now() - 3600000 * 2).toISOString(),
-        notes: 'Speedtest tembus 68.4 Mbps di meja kerja kamar 101.',
-      },
-      {
-        id: 'ev-demo-2',
-        buildingId: tomang.id,
-        buildingSlug: 'rukita-tawakal-tomang',
-        entityId: 'rm-101',
-        entityName: 'Kamar 101',
-        category: 'TV_CHECK',
-        mediaType: 'image',
-        fileUrl: sampleTvSvg,
-        fileName: 'TMG_TV_STREAM_RM101_20261025_102000.jpg',
-        folderPath: 'evidence/rukita-tawakal-tomang/kamar/',
-        originalName: 'tv_streaming_test.jpg',
-        sizeBytes: 51200,
-        capturedAt: new Date(Date.now() - 3600000 * 2).toISOString(),
-        notes: 'Google TV 43 inch streaming YouTube 1080p jernih.',
-      },
-      {
-        id: 'ev-demo-3',
-        buildingId: tomang.id,
-        buildingSlug: 'rukita-tawakal-tomang',
-        entityId: 'dev-tmg-ap1',
-        entityName: 'AP Wi-Fi Koridor Lt 1',
-        category: 'DEVICE_ASSET',
-        mediaType: 'image',
-        fileUrl: sampleAssetApSvg,
-        fileName: 'TMG_ASSET_LABEL_AP_KORIDOR_LT1_20261025_110000.jpg',
-        folderPath: 'evidence/rukita-tawakal-tomang/perangkat-asset/',
-        originalName: 'ap_plafon_sn.jpg',
-        sizeBytes: 48900,
-        capturedAt: new Date(Date.now() - 3600000 * 1).toISOString(),
-        notes: 'Plafon depan kamar 102, LED hijau menyala normal, PoE aktif.',
-      },
-    ];
-
-    for (const item of initialDemo) {
-      await saveEvidenceItem(item);
-    }
-  } catch (err) {
-    console.warn('Seeding initial demo evidence skipped:', err);
-  }
 }

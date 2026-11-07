@@ -24,8 +24,8 @@ export function calculateBuildingReadiness(building: Building): BuildingReadines
   // 1. Wi-Fi
   const wifiFacilities = allFacilities.filter(f => f.hasWifi);
   const totalWifiEndpoints = allRooms.length + wifiFacilities.length;
-  const wifiPassRooms = allRooms.filter(r => r.wifiStatus === 'PASS').length;
-  const wifiPassFac = wifiFacilities.filter(f => f.wifiStatus === 'PASS').length;
+  const wifiPassRooms = allRooms.filter(r => r.wifiStatus === 'OK').length;
+  const wifiPassFac = wifiFacilities.filter(f => f.wifiStatus === 'OK').length;
   const wifiPassTotal = wifiPassRooms + wifiPassFac;
   const wifiScore = totalWifiEndpoints > 0 ? Math.round((wifiPassTotal / totalWifiEndpoints) * 100) : 100;
   
@@ -39,8 +39,8 @@ export function calculateBuildingReadiness(building: Building): BuildingReadines
   const smartlockRooms = allRooms.filter(r => r.hasSmartlock);
   const smartlockFacilities = allFacilities.filter(f => f.hasLock);
   const totalLocks = smartlockRooms.length + smartlockFacilities.length;
-  const lockPassRooms = smartlockRooms.filter(r => r.lockStatus === 'PASS').length;
-  const lockPassFac = smartlockFacilities.filter(f => f.lockStatus === 'PASS').length;
+  const lockPassRooms = smartlockRooms.filter(r => r.lockStatus === 'OK').length;
+  const lockPassFac = smartlockFacilities.filter(f => f.lockStatus === 'OK').length;
   const lockPassTotal = lockPassRooms + lockPassFac;
   const lockScore = totalLocks > 0 ? Math.round((lockPassTotal / totalLocks) * 100) : 100;
 
@@ -48,14 +48,14 @@ export function calculateBuildingReadiness(building: Building): BuildingReadines
   const tvRooms = allRooms.filter(r => r.hasTv);
   const tvFacilities = allFacilities.filter(f => f.hasTv);
   const totalTvs = tvRooms.length + tvFacilities.length;
-  const tvPassRooms = tvRooms.filter(r => r.tvStatus === 'PASS').length;
-  const tvPassFac = tvFacilities.filter(f => f.tvStatus === 'PASS').length;
+  const tvPassRooms = tvRooms.filter(r => r.tvStatus === 'OK').length;
+  const tvPassFac = tvFacilities.filter(f => f.tvStatus === 'OK').length;
   const tvPassTotal = tvPassRooms + tvPassFac;
   const tvScore = totalTvs > 0 ? Math.round((tvPassTotal / totalTvs) * 100) : 100;
 
   // 4. CCTV
   const totalCctv = building.cctvPoints.length;
-  const cctvPass = building.cctvPoints.filter(p => p.status === 'PASS').length;
+  const cctvPass = building.cctvPoints.filter(p => p.status === 'OK').length;
   const recordingCount = building.cctvPoints.filter(p => p.isRecording).length;
   const cctvScore = totalCctv > 0 ? Math.round((cctvPass / totalCctv) * 100) : 100;
 

@@ -37,6 +37,7 @@ interface SimpleIssueTrackerProps {
     recheckNotes?: string;
   }) => void;
   onAddIssue: (issue: Omit<ColivingIssue, 'id' | 'createdAt' | 'status'>) => void;
+  onDeleteIssue?: (issueId: string) => void;
 }
 
 export const SimpleIssueTracker: React.FC<SimpleIssueTrackerProps> = ({
@@ -47,6 +48,7 @@ export const SimpleIssueTracker: React.FC<SimpleIssueTrackerProps> = ({
   onToggleStatus,
   onResolveIssueWithProof,
   onAddIssue,
+  onDeleteIssue,
 }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [location, setLocation] = useState('Kamar 101');
@@ -464,6 +466,19 @@ export const SimpleIssueTracker: React.FC<SimpleIssueTrackerProps> = ({
                         <span>Buka Kembali</span>
                       </button>
                     </div>
+                  )}
+
+                  {onDeleteIssue && (
+                    <button
+                      onClick={() => {
+                        if (window.confirm(`Hapus kendala di ${i.location}? Tindakan ini permanen.`)) onDeleteIssue(i.id);
+                      }}
+                      className="px-2.5 py-1 rounded-lg border border-border hover:bg-rose-500/10 text-muted-foreground hover:text-rose-600 text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+                      title="Hapus kendala dari daftar"
+                    >
+                      <X className="w-3 h-3" />
+                      <span>Hapus</span>
+                    </button>
                   )}
                 </div>
 

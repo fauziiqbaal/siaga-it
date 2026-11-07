@@ -30,6 +30,11 @@ export default {
         sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
         mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
       },
+      // Lapisan overlay di atas Sheet (z-50): lightbox (z-60) dan viewfinder kamera (z-70).
+      zIndex: {
+        60: '60',
+        70: '70',
+      },
     },
   },
   plugins: [],

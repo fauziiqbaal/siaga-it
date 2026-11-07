@@ -1,0 +1,52 @@
+# .clineignore — filter konteks otomatis Cline (hemat token)
+# Sintaks sama dengan .gitignore: direktori, glob (*, **), dan negasi (!) didukung.
+# Catatan: di Cline versi baru fitur ini ditandai "deprecated" — ia tetap memfilter
+# apa yang dimuat otomatis, tapi bukan batas keamanan (masih bisa dibuka lewat
+# @mention / perintah shell). Untuk penegakan keras, pakai hook PreToolUse
+# di .clinerules/hooks/PreToolUse (lihat docs/PROJECT-MAP.md bagian 6).
+
+# --- Dependency & output build (tidak pernah perlu masuk konteks) ---
+node_modules/
+dist/
+dist-ssr/
+.report-build/
+.ssr-check/
+.shots-build/
+__pycache__/
+
+# --- Android: hanya artefak generated yang di-ignore ---
+# PENTING: android/app/src/main/java/** JANGAN di-ignore
+# (ada WifiSignalPlugin.java yang dipakai fitur dBm native).
+android/.gradle/
+android/build/
+android/app/build/
+android/app/src/main/assets/public/
+android/capacitor-cordova-android-plugins/
+android/local.properties
+android/.settings/
+
+# --- Laporan & screenshot (biner; 1 gambar bisa menghabiskan >1k token) ---
+reports/
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+
+# --- Data runtime & backup user (privasi + ukuran) ---
+data/
+.tmp-data/
+.tmp-live/
+*.bak
+*.json.bak
+
+# --- Log & lockfile besar (ribuan baris, tidak informatif) ---
+*.log
+package-lock.json
+
+# --- Arsip/scratch pribadi ---
+*.zip
+*.7z
+tmp/
+scratch/

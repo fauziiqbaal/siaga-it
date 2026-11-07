@@ -1,8 +1,143 @@
-export type CheckStatus = 'PASS' | 'FAIL' | 'PENDING' | 'NA';
+// Status QC 1-tap per titik/perangkat: OK, Need Improvement, Rusak, atau Belum Tersedia.
+// PENDING hanya dipakai sebagai "belum dinilai" (default perangkat baru) dan tidak
+// punya tombol sendiri di UI.
+export type CheckStatus = 'OK' | 'NEED_IMPROVE' | 'RUSAK' | 'BELUM_TERSEDIA' | 'PENDING';
 
-export type TvType = 'ANDROID_GOOGLE_TV' | 'CABLE_TV' | 'NONE';
+export const CHECK_STATUS_LABELS: Record<CheckStatus, string> = {
+  OK: 'OK',
+  NEED_IMPROVE: 'Need Improvement',
+  RUSAK: 'Rusak',
+  BELUM_TERSEDIA: 'Belum Tersedia',
+  PENDING: 'Belum dinilai',
+};
+
+/** Titik sudah memenuhi standar (tidak butuh tindakan). */
+export const isCheckOk = (status?: CheckStatus): boolean => status === 'OK';
+
+/** Perlu perbaikan atau rusak — masuk blocker & kandidat tiket vendor. */
+export const isCheckProblem = (status?: CheckStatus): boolean =>
+  status === 'NEED_IMPROVE' || status === 'RUSAK';
+
+/** Belum dinilai sama sekali. */
+export const isCheckPending = (status?: CheckStatus): boolean =>
+  status === 'PENDING' || status === undefined;
+
+/** Migrasi nilai status lama (PASS/FAIL/NA) saat memuat data tersimpan. */
+export const migrateCheckStatus = (status: unknown): CheckStatus => {
+  switch (status) {
+    case 'OK':
+    case 'NEED_IMPROVE':
+    case 'RUSAK':
+    case 'BELUM_TERSEDIA':
+    case 'PENDING':
+      return status;
+    case 'PASS':
+      return 'OK';
+    case 'FAIL':
+      return 'RUSAK';
+    case 'NA':
+      return 'BELUM_TERSEDIA';
+    default:
+      return 'PENDING';
+  }
+};
+
+// Jenis perangkat TV per kamar / area bersama.
+export type TvType =
+  | 'ANDROID_TV'
+  | 'TV_DIGITAL'
+  | 'TV_DIGITAL_STB_ANDROID'
+  | 'TV_ANALOG_STB_DIGITAL'
+  | 'TV_ANALOG_STB_ANDROID'
+  | 'NONE';
+
+export const TV_TYPE_OPTIONS: Array<{ value: TvType; label: string }> = [
+  { value: 'ANDROID_TV', label: 'Android TV' },
+  { value: 'TV_DIGITAL', label: 'TV Digital' },
+  { value: 'TV_DIGITAL_STB_ANDROID', label: 'TV Digital + STB Android' },
+  { value: 'TV_ANALOG_STB_DIGITAL', label: 'TV Analog + STB Digital' },
+  { value: 'TV_ANALOG_STB_ANDROID', label: 'TV Analog + STB Android' },
+  { value: 'NONE', label: 'Tidak Tersedia TV' },
+];
+
+export const TV_TYPE_LABELS: Record<TvType, string> = {
+  ANDROID_TV: 'Android TV',
+  TV_DIGITAL: 'TV Digital',
+  TV_DIGITAL_STB_ANDROID: 'TV Digital + STB Android',
+  TV_ANALOG_STB_DIGITAL: 'TV Analog + STB Digital',
+  TV_ANALOG_STB_ANDROID: 'TV Analog + STB Android',
+  NONE: 'Tidak Tersedia TV',
+};
+
+export const tvTypeLabel = (value?: TvType): string =>
+  value ? TV_TYPE_LABELS[value] ?? 'Tipe TV belum diisi' : 'Tipe TV belum diisi';
+
+export const migrateTvType = (value: unknown): TvType => {
+  switch (value) {
+    case 'ANDROID_TV':
+    case 'TV_DIGITAL':
+    case 'TV_DIGITAL_STB_ANDROID':
+    case 'TV_ANALOG_STB_DIGITAL':
+    case 'TV_ANALOG_STB_ANDROID':
+    case 'NONE':
+      return value;
+    case 'ANDROID_GOOGLE_TV':
+      return 'ANDROID_TV';
+    case 'CABLE_TV':
+      return 'TV_DIGITAL';
+    default:
+      return 'NONE';
+  }
+};
+
+// Kemampuan streaming TV (Netflix) per kamar / area bersama.
+export type TvStreamingCapability = 'NETFLIX_READY' | 'BASIC_ANDROID' | 'TV_DIGITAL';
+
+export const TV_STREAMING_OPTIONS: Array<{ value: TvStreamingCapability; label: string }> = [
+  { value: 'NETFLIX_READY', label: 'Netflix Ready' },
+  { value: 'BASIC_ANDROID', label: 'Basic Android' },
+  { value: 'TV_DIGITAL', label: 'TV Digital' },
+];
+
+export const TV_STREAMING_LABELS: Record<TvStreamingCapability, string> = {
+  NETFLIX_READY: 'Netflix Ready',
+  BASIC_ANDROID: 'Basic Android',
+  TV_DIGITAL: 'TV Digital',
+};
+
+export const tvStreamingLabel = (value?: TvStreamingCapability): string =>
+  value ? TV_STREAMING_LABELS[value] : 'Kemampuan streaming belum diisi';
+
+export const migrateTvStreaming = (value: unknown): TvStreamingCapability | undefined => {
+  switch (value) {
+    case 'NETFLIX_READY':
+    case 'BASIC_ANDROID':
+    case 'TV_DIGITAL':
+      return value;
+    case 'SUPPORT':
+      return 'NETFLIX_READY';
+    case 'NOT_SUPPORT':
+      return 'BASIC_ANDROID';
+    default:
+      return undefined;
+  }
+};
 
 export type LockType = 'KUNCI_BIASA' | 'SMARTLOCK_HANDLE' | 'SMARTLOCK_GATE_ACCESS' | 'NONE';
+
+// Alur kerja 3 fase + status live
+export type BuildingPhase = 'SETUP' | 'PRE_OPENING' | 'OPENING' | 'LIVE';
+
+// Serah terima akun & billing saat fase Opening
+export interface HandoverSignOff {
+  signedBy: string;
+  role: string;
+  signedAt: string; // ISO / tanggal teks
+  accountsConfirmed: boolean; // akun perangkat sudah dipegang IT
+  billingConfirmed: boolean; // billing ISP sudah dialihkan ke IT billing
+  credentialsConfirmed: boolean; // kredensial tersimpan di password manager
+  notes?: string;
+}
 
 export interface RoomColiving {
   id: string;
@@ -18,13 +153,23 @@ export interface RoomColiving {
   wifiSignal24Dbm?: number; // Sinyal desibel pada frekuensi 2.4 GHz
   wifiDualBandSupport?: boolean; // true jika kedua frekuensi (5GHz & 2.4GHz) aktif & didukung
   wifiEvidenceUrl?: string; // URL / Base64 bukti sertifikat speedtest & coverage
+  // Hasil uji (diisi dari SpeedtestSheet — angka asli, bukan simulasi)
+  wifiUploadMbps?: number;
+  wifiPingMs?: number;
+  wifiTestedAt?: string;
+  wifiTestSource?: 'BROWSER' | 'MANUAL' | 'NATIVE';
+  // Standar smartlock: tap RFID < 1 detik, baterai > 80%
+  lockBatteryPercent?: number;
+  rfidTapMs?: number;
+  hasBleMobileKey?: boolean;
   tvStatus: CheckStatus;
   lockStatus: CheckStatus;
   tvType?: TvType;
-  netflixSupport?: NetflixSupportStatus;
+  netflixSupport?: TvStreamingCapability;
   lockType?: LockType;
   ttlockSupport?: TtlockSupportStatus;
   ttlockTakeoverStatus?: TakeoverStatus;
+  ttlockAccountEmail?: string;
   type?: string;
   notes?: string;
   // Tracking issue & resolution evidence per pilar
@@ -58,13 +203,23 @@ export interface FloorFacility {
   wifiSignal24Dbm?: number; // Sinyal desibel pada frekuensi 2.4 GHz
   wifiDualBandSupport?: boolean; // true jika kedua frekuensi didukung
   wifiEvidenceUrl?: string; // URL / Base64 bukti sertifikat speedtest & coverage
+  wifiUploadMbps?: number;
+  wifiPingMs?: number;
+  wifiTestedAt?: string;
+  wifiTestSource?: 'BROWSER' | 'MANUAL' | 'NATIVE';
+  lockBatteryPercent?: number;
+  rfidTapMs?: number;
+  hasBleMobileKey?: boolean;
   hasTv: boolean;
+  tvType?: TvType;
+  netflixSupport?: TvStreamingCapability;
   tvStatus: CheckStatus;
   hasLock: boolean;
   lockType: LockType;
   lockStatus: CheckStatus;
   ttlockSupport?: TtlockSupportStatus;
   ttlockTakeoverStatus?: TakeoverStatus;
+  ttlockAccountEmail?: string;
   notes?: string;
   // Tracking issue & resolution evidence per pilar
   wifiIssueText?: string;
@@ -135,6 +290,15 @@ export const ASSET_CATEGORIES: Record<string, { label: string; subCategories: st
 
 export type TakeoverStatus = 'SUDAH_TAKEOVER' | 'BELUM_TAKEOVER' | 'PROSES_TAKEOVER';
 
+// Kondisi fisik aset saat inspeksi Pre-Opening (bukan status konfigurasi — itu milik fase Opening).
+export type AssetCondition = 'OK' | 'NEED_IMPROVE' | 'RUSAK';
+
+export const ASSET_CONDITION_LABELS: Record<AssetCondition, string> = {
+  OK: 'OK',
+  NEED_IMPROVE: 'Need improve',
+  RUSAK: 'Rusak',
+};
+
 export type NetflixSupportStatus = 'SUPPORT' | 'NOT_SUPPORT' | 'NOT_TESTED';
 
 export type TtlockSupportStatus = 'SUPPORT_TTLOCK' | 'NON_TTLOCK';
@@ -155,6 +319,7 @@ export interface ITDevice {
   adminPassword: string; // e.g. "Rukita@Wifi26"
   portUplink?: string; // e.g. "Port 4 PoE Switch IDF-1"
   configStatus: 'CONFIGURED' | 'NEEDS_CONFIG' | 'OFFLINE';
+  condition?: AssetCondition; // Kondisi fisik aset (OK / Need improve / Rusak) — diisi saat Pre-Opening
   ssidStatus?: 'SSID_CHANGED' | 'SSID_DEFAULT'; // Go Live Preparation: apakah SSID bawaan sudah diganti ke standar gedung
   ssidName?: string; // Nama broadcast SSID yang sudah diterapkan
   netflixSupport?: NetflixSupportStatus; // Dukungan pemutaran aplikasi Netflix (Widevine L1 certified)
@@ -167,6 +332,7 @@ export interface ITDevice {
   cloudUnbindStatus?: 'UNBOUND' | 'STILL_BOUND' | 'NOT_APPLICABLE'; // Unbind dari akun lama & bind ke akun master IT
   takeoverDate?: string;
   takeoverNotes?: string;
+  photoUrl?: string; // URL / Base64 foto fisik perangkat atau label SN
 }
 
 export interface FloorConfig {
@@ -301,7 +467,8 @@ export interface InternetConnection {
   accountHolder?: string; // Atas Nama Tagihan (e.g. "PT Rukita Bhineka Nusantara" / "Nama Owner")
   isBillingTakeover?: boolean; // true jika sudah di-take over ke it.billing@rukita.co
   billingTakeoverStatus?: BillingTakeoverStatus; // 'SUDAH_TAKEOVER' | 'BELUM_TAKEOVER' | 'PROSES_TAKEOVER'
-  billingEmail?: string; // default "it.billing@rukita.co"
+  billingEmail?: string; // Email terdaftar di ISP (default "it.billing@rukita.co")
+  registeredPhone?: string; // Nomor telepon terdaftar di ISP (e.g. "0811-9823-123")
   billingTakeoverDate?: string; // e.g. "15 Okt 2026"
   ipPublic?: string; // IP Publik Static / Dynamic (e.g. "103.28.12.45")
   modemWanPort?: string; // e.g. "MikroTik ether1-WAN1"
@@ -313,9 +480,17 @@ export interface InternetConnection {
 
 export type WifiStandardizationStatus = 'STANDAR_TERAPKAN' | 'BELUM_DISERAGAMKAN' | 'SEDANG_PROSES';
 
+/** Model konfigurasi SSID: satu SSID untuk semua, banyak SSID di satu AP, atau SSID terpisah per fungsi. */
+export type WifiConfigModel = 'SINGLE' | 'MULTI' | 'PISAH';
+
+/**
+ * Catatan konfigurasi Wi-Fi (informasi/dokumentasi).
+ * Tidak dipakai menghitung Opening Score — skor Opening hanya dari perangkat, akun, billing.
+ */
 export interface WifiStandardProfile {
   guestSsid: string;          // e.g. "@Rukita Tawakal Community"
   guestPassword: string;      // e.g. "RukitaLive2026!"
+  configModel?: WifiConfigModel; // Single SSID / Multi SSID / Pisah SSID
   isCaptivePortal: boolean;   // true if uses captive portal instead of WPA password
   opsSsid?: string;           // Internal Ops / Staff, e.g. "Rukita-Ops-Secure"
   opsPassword?: string;       // e.g. "Ops#Tomang2026"
@@ -352,8 +527,20 @@ export interface Building {
   openingDate: string; // Target Live Date (misal: "01 Nov 2026")
   presaleDate?: string; // Tanggal Pre-Sale Opsional (misal: "27 Okt 2026"). Jika terisi, Due Date IT adalah H-3 Pre-sale; jika tidak ada, H-3 Live Date.
   ispProvider: string;
+  phase?: BuildingPhase; // Fase onboarding: SETUP -> PRE_OPENING -> OPENING -> LIVE
+  /**
+   * Revisi sinkron dari server (`serve.py`): naik satu setiap kali gedung ini
+   * disimpan. Dipakai sebagai `baseRev` saat kirim supaya server bisa menolak
+   * simpanan yang mendasari data basi (409) — hanya gedung ini yang ditulis,
+   * gedung properti lain tidak pernah ikut tertimpa.
+   */
+  rev?: number;
+  /** Waktu ISO saat server terakhir menerima perubahan gedung ini. */
+  updatedAt?: string;
   internetConnections?: InternetConnection[];
   wifiStandardProfile?: WifiStandardProfile;
+  handover?: HandoverSignOff;
+  cctvRetentionDays?: number; // Standar Rukita: >= 30 hari retensi NVR
   inspectionVisits?: InspectionVisit[];
   floors: FloorConfig[];
   cctvPoints: CCTVPoint[];

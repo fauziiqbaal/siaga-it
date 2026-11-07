@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Building, CheckStatus, FloorConfig, FloorFacility, ITDevice, RoomColiving, EvidenceCategory, InspectionVisit, VisitType, ColivingIssue, SimpleUser } from '../../types/hotel';
+import { Building, CheckStatus, FloorConfig, FloorFacility, ITDevice, RoomColiving, EvidenceCategory, InspectionVisit, VisitType, ColivingIssue, SimpleUser, tvTypeLabel } from '../../types/hotel';
 import { 
   Wifi, 
   Tv, 
@@ -193,10 +193,10 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
   const allRooms = building.floors.flatMap(f => f.rooms);
   const allFacilities = building.floors.flatMap(f => f.facilities);
 
-  const wifiPass = allRooms.filter(r => r.wifiStatus === 'PASS').length;
-  const lockPass = allRooms.filter(r => r.hasSmartlock && r.lockStatus === 'PASS').length;
-  const issuesRooms = allRooms.filter(r => r.wifiStatus === 'FAIL' || (r.hasTv && r.tvStatus === 'FAIL') || (r.hasSmartlock && r.lockStatus === 'FAIL'));
-  const issuesFacilities = allFacilities.filter(f => (f.hasWifi && f.wifiStatus === 'FAIL') || (f.hasTv && f.tvStatus === 'FAIL') || (f.hasLock && f.lockStatus === 'FAIL'));
+  const wifiPass = allRooms.filter(r => r.wifiStatus === 'OK').length;
+  const lockPass = allRooms.filter(r => r.hasSmartlock && r.lockStatus === 'OK').length;
+  const issuesRooms = allRooms.filter(r => r.wifiStatus === 'RUSAK' || (r.hasTv && r.tvStatus === 'RUSAK') || (r.hasSmartlock && r.lockStatus === 'RUSAK'));
+  const issuesFacilities = allFacilities.filter(f => (f.hasWifi && f.wifiStatus === 'RUSAK') || (f.hasTv && f.tvStatus === 'RUSAK') || (f.hasLock && f.lockStatus === 'RUSAK'));
 
   const totalPoints = allRooms.length + allFacilities.length;
   const totalPassed = (allRooms.length - issuesRooms.length) + (allFacilities.length - issuesFacilities.length);
@@ -289,7 +289,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
 
   // ROOM ISSUE/SOLVE POP-OUT TRIGGERS
   const handleTriggerWifiRoom = (floorId: string, room: RoomColiving) => {
-    const isFail = room.wifiStatus === 'FAIL';
+    const isFail = room.wifiStatus === 'RUSAK';
     const prevIssue = getPreviousIssueData(`Kamar ${room.number}`, 'INTERNET');
 
     setIssueModalState({
@@ -314,7 +314,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
     onUpdateRoom(floorId, {
       ...room,
       wifiSpeedMbps: speed,
-      wifiStatus: speed >= 15 ? 'PASS' : 'FAIL',
+      wifiStatus: speed >= 15 ? 'OK' : 'RUSAK',
     });
   };
 
@@ -372,7 +372,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
         entityId,
         title: entityTitle,
         pillar: 'WIFI',
-        currentStatus: 'FAIL',
+        currentStatus: 'RUSAK',
         previousIssueText: issueText,
         previousPhotoUrl: evidenceDataUrl,
         previousReportedAt: 'Baru saja (Speedtest)',
@@ -383,7 +383,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
 
   const handleTriggerTvRoom = (floorId: string, room: RoomColiving) => {
     if (!room.hasTv) return;
-    const isFail = room.tvStatus === 'FAIL';
+    const isFail = room.tvStatus === 'RUSAK';
     const prevIssue = getPreviousIssueData(`Kamar ${room.number}`, 'TV');
 
     setIssueModalState({
@@ -404,7 +404,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
   };
 
   const handleTriggerLockRoom = (floorId: string, room: RoomColiving) => {
-    const isFail = room.lockStatus === 'FAIL';
+    const isFail = room.lockStatus === 'RUSAK';
     const prevIssue = getPreviousIssueData(`Kamar ${room.number}`, 'SMARTLOCK');
 
     setIssueModalState({
@@ -428,7 +428,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
     onUpdateFacility(floorId, {
       ...fac,
       wifiSpeedMbps: speed,
-      wifiStatus: speed >= 15 ? 'PASS' : 'FAIL',
+      wifiStatus: speed >= 15 ? 'OK' : 'RUSAK',
     });
   };
 
@@ -451,7 +451,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
         url: room.wifiIssuePhoto,
         title: `Kendala Wi-Fi: ${room.wifiIssueText || 'Drop'}`,
         pillar: 'WIFI',
-        statusTag: 'FAIL',
+        statusTag: 'RUSAK',
         timestamp: 'Laporan Kendala',
       });
     }
@@ -471,7 +471,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
         url: room.tvIssuePhoto,
         title: `Kendala TV: ${room.tvIssueText || 'Error'}`,
         pillar: 'TV',
-        statusTag: 'FAIL',
+        statusTag: 'RUSAK',
         timestamp: 'Laporan Kendala',
       });
     }
@@ -481,7 +481,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
         url: room.tvResolvedPhoto,
         title: `Inspeksi TV: ${room.tvResolvedNote || 'Normal'}`,
         pillar: 'TV',
-        statusTag: 'PASS',
+        statusTag: 'OK',
         timestamp: 'Inspeksi QC',
       });
     }
@@ -491,7 +491,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
         url: room.lockIssuePhoto,
         title: `Kendala Smartlock: ${room.lockIssueText || 'Macet'}`,
         pillar: 'SMARTLOCK',
-        statusTag: 'FAIL',
+        statusTag: 'RUSAK',
         timestamp: 'Laporan Kendala',
       });
     }
@@ -501,7 +501,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
         url: room.lockResolvedPhoto,
         title: `Inspeksi Smartlock: ${room.lockResolvedNote || 'Normal'}`,
         pillar: 'SMARTLOCK',
-        statusTag: 'PASS',
+        statusTag: 'OK',
         timestamp: 'Inspeksi QC',
       });
     }
@@ -513,7 +513,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
           url: i.photoUrl,
           title: `Kendala: ${i.issue}`,
           pillar: i.category === 'INTERNET' ? 'WIFI' : i.category === 'TV' ? 'TV' : 'SMARTLOCK',
-          statusTag: i.status === 'RESOLVED' ? 'RESOLVED' : 'FAIL',
+          statusTag: i.status === 'RESOLVED' ? 'RESOLVED' : 'RUSAK',
           timestamp: i.photoTimestamp || i.createdAt,
         });
       }
@@ -540,7 +540,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
         url: fac.wifiIssuePhoto,
         title: `Kendala Wi-Fi: ${fac.wifiIssueText || 'Drop'}`,
         pillar: 'WIFI',
-        statusTag: 'FAIL',
+        statusTag: 'RUSAK',
         timestamp: 'Laporan Kendala',
       });
     }
@@ -560,7 +560,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
         url: fac.tvIssuePhoto,
         title: `Kendala TV: ${fac.tvIssueText || 'Error'}`,
         pillar: 'TV',
-        statusTag: 'FAIL',
+        statusTag: 'RUSAK',
         timestamp: 'Laporan Kendala',
       });
     }
@@ -570,7 +570,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
         url: fac.tvResolvedPhoto,
         title: `Inspeksi TV: ${fac.tvResolvedNote || 'Normal'}`,
         pillar: 'TV',
-        statusTag: 'PASS',
+        statusTag: 'OK',
         timestamp: 'Inspeksi QC',
       });
     }
@@ -580,7 +580,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
         url: fac.lockIssuePhoto,
         title: `Kendala Smartlock: ${fac.lockIssueText || 'Macet'}`,
         pillar: 'SMARTLOCK',
-        statusTag: 'FAIL',
+        statusTag: 'RUSAK',
         timestamp: 'Laporan Kendala',
       });
     }
@@ -590,7 +590,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
         url: fac.lockResolvedPhoto,
         title: `Inspeksi Smartlock: ${fac.lockResolvedNote || 'Normal'}`,
         pillar: 'SMARTLOCK',
-        statusTag: 'PASS',
+        statusTag: 'OK',
         timestamp: 'Inspeksi QC',
       });
     }
@@ -602,7 +602,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
           url: i.photoUrl,
           title: `Kendala: ${i.issue}`,
           pillar: i.category === 'INTERNET' ? 'WIFI' : i.category === 'TV' ? 'TV' : 'SMARTLOCK',
-          statusTag: i.status === 'RESOLVED' ? 'RESOLVED' : 'FAIL',
+          statusTag: i.status === 'RESOLVED' ? 'RESOLVED' : 'RUSAK',
           timestamp: i.photoTimestamp || i.createdAt,
         });
       }
@@ -635,7 +635,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
     photoUrl,
     issuePreset,
   }: {
-    status: 'PASS' | 'FAIL';
+    status: 'OK' | 'RUSAK';
     note?: string;
     photoUrl?: string;
     issuePreset?: string;
@@ -649,10 +649,10 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
       if (room) {
         let updated: RoomColiving = { ...room };
         if (pillar === 'TV') {
-          if (status === 'PASS') {
+          if (status === 'OK') {
             updated = {
               ...updated,
-              tvStatus: 'PASS',
+              tvStatus: 'OK',
               tvResolvedNote: note,
               tvResolvedPhoto: photoUrl,
               tvIssueText: undefined,
@@ -661,17 +661,17 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
           } else {
             updated = {
               ...updated,
-              tvStatus: 'FAIL',
+              tvStatus: 'RUSAK',
               tvIssueText: issuePreset || note || 'TV bermasalah',
               tvIssuePhoto: photoUrl,
             };
             onReportIssue(title, 'TV', issuePreset || note || 'TV bermasalah', photoUrl);
           }
         } else if (pillar === 'SMARTLOCK') {
-          if (status === 'PASS') {
+          if (status === 'OK') {
             updated = {
               ...updated,
-              lockStatus: 'PASS',
+              lockStatus: 'OK',
               lockResolvedNote: note,
               lockResolvedPhoto: photoUrl,
               lockIssueText: undefined,
@@ -680,7 +680,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
           } else {
             updated = {
               ...updated,
-              lockStatus: 'FAIL',
+              lockStatus: 'RUSAK',
               lockIssueText: issuePreset || note || 'Smartlock bermasalah',
               lockIssuePhoto: photoUrl,
             };
@@ -695,10 +695,10 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
       if (fac) {
         let updated: FloorFacility = { ...fac };
         if (pillar === 'TV') {
-          if (status === 'PASS') {
+          if (status === 'OK') {
             updated = {
               ...updated,
-              tvStatus: 'PASS',
+              tvStatus: 'OK',
               tvResolvedNote: note,
               tvResolvedPhoto: photoUrl,
               tvIssueText: undefined,
@@ -707,17 +707,17 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
           } else {
             updated = {
               ...updated,
-              tvStatus: 'FAIL',
+              tvStatus: 'RUSAK',
               tvIssueText: issuePreset || note || 'TV fasilitas bermasalah',
               tvIssuePhoto: photoUrl,
             };
             onReportIssue(title, 'TV', issuePreset || note || 'TV fasilitas bermasalah', photoUrl);
           }
         } else if (pillar === 'SMARTLOCK') {
-          if (status === 'PASS') {
+          if (status === 'OK') {
             updated = {
               ...updated,
-              lockStatus: 'PASS',
+              lockStatus: 'OK',
               lockResolvedNote: note,
               lockResolvedPhoto: photoUrl,
               lockIssueText: undefined,
@@ -726,7 +726,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
           } else {
             updated = {
               ...updated,
-              lockStatus: 'FAIL',
+              lockStatus: 'RUSAK',
               lockIssueText: issuePreset || note || 'Akses smartlock fasilitas bermasalah',
               lockIssuePhoto: photoUrl,
             };
@@ -748,7 +748,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
 
   // FACILITY ISSUE/SOLVE POP-OUT TRIGGERS
   const handleTriggerFacilityWifi = (floorId: string, fac: FloorFacility) => {
-    const isFail = fac.wifiStatus === 'FAIL';
+    const isFail = fac.wifiStatus === 'RUSAK';
     const prevIssue = getPreviousIssueData(fac.name, 'INTERNET');
 
     setIssueModalState({
@@ -770,7 +770,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
   };
 
   const handleTriggerFacilityLock = (floorId: string, fac: FloorFacility) => {
-    const isFail = fac.lockStatus === 'FAIL';
+    const isFail = fac.lockStatus === 'RUSAK';
     const prevIssue = getPreviousIssueData(fac.name, 'SMARTLOCK');
 
     setIssueModalState({
@@ -791,7 +791,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
   };
 
   const handleTriggerFacilityTv = (floorId: string, fac: FloorFacility) => {
-    const isFail = fac.tvStatus === 'FAIL';
+    const isFail = fac.tvStatus === 'RUSAK';
     const prevIssue = getPreviousIssueData(fac.name, 'TV');
 
     setIssueModalState({
@@ -834,17 +834,17 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
         const updated: RoomColiving = {
           ...room,
           ...(pillar === 'WIFI' && {
-            wifiStatus: 'FAIL',
+            wifiStatus: 'RUSAK',
             wifiIssueText: issueText,
             wifiIssuePhoto: photoUrl,
           }),
           ...(pillar === 'TV' && {
-            tvStatus: 'FAIL',
+            tvStatus: 'RUSAK',
             tvIssueText: issueText,
             tvIssuePhoto: photoUrl,
           }),
           ...(pillar === 'SMARTLOCK' && {
-            lockStatus: 'FAIL',
+            lockStatus: 'RUSAK',
             lockIssueText: issueText,
             lockIssuePhoto: photoUrl,
           }),
@@ -858,17 +858,17 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
         const updated: FloorFacility = {
           ...fac,
           ...(pillar === 'WIFI' && {
-            wifiStatus: 'FAIL',
+            wifiStatus: 'RUSAK',
             wifiIssueText: issueText,
             wifiIssuePhoto: photoUrl,
           }),
           ...(pillar === 'TV' && {
-            tvStatus: 'FAIL',
+            tvStatus: 'RUSAK',
             tvIssueText: issueText,
             tvIssuePhoto: photoUrl,
           }),
           ...(pillar === 'SMARTLOCK' && {
-            lockStatus: 'FAIL',
+            lockStatus: 'RUSAK',
             lockIssueText: issueText,
             lockIssuePhoto: photoUrl,
           }),
@@ -903,18 +903,18 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
         const updated: RoomColiving = {
           ...room,
           ...(pillar === 'WIFI' && {
-            wifiStatus: 'PASS',
+            wifiStatus: 'OK',
             wifiResolvedNote: resolutionNote,
             wifiResolvedPhoto: resolutionPhotoUrl,
             ...(updatedSpeedMbps ? { wifiSpeedMbps: updatedSpeedMbps } : {}),
           }),
           ...(pillar === 'TV' && {
-            tvStatus: 'PASS',
+            tvStatus: 'OK',
             tvResolvedNote: resolutionNote,
             tvResolvedPhoto: resolutionPhotoUrl,
           }),
           ...(pillar === 'SMARTLOCK' && {
-            lockStatus: 'PASS',
+            lockStatus: 'OK',
             lockResolvedNote: resolutionNote,
             lockResolvedPhoto: resolutionPhotoUrl,
           }),
@@ -928,18 +928,18 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
         const updated: FloorFacility = {
           ...fac,
           ...(pillar === 'WIFI' && {
-            wifiStatus: 'PASS',
+            wifiStatus: 'OK',
             wifiResolvedNote: resolutionNote,
             wifiResolvedPhoto: resolutionPhotoUrl,
             ...(updatedSpeedMbps ? { wifiSpeedMbps: updatedSpeedMbps } : {}),
           }),
           ...(pillar === 'TV' && {
-            tvStatus: 'PASS',
+            tvStatus: 'OK',
             tvResolvedNote: resolutionNote,
             tvResolvedPhoto: resolutionPhotoUrl,
           }),
           ...(pillar === 'SMARTLOCK' && {
-            lockStatus: 'PASS',
+            lockStatus: 'OK',
             lockResolvedNote: resolutionNote,
             lockResolvedPhoto: resolutionPhotoUrl,
           }),
@@ -1216,7 +1216,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
         {filteredFloors.map((floor) => {
           const roomsMatching = floor.rooms.filter(r => {
             if (filterMode === 'ISSUES') {
-              const hasIssue = r.wifiStatus === 'FAIL' || (r.hasTv && r.tvStatus === 'FAIL') || r.lockStatus === 'FAIL';
+              const hasIssue = r.wifiStatus === 'RUSAK' || (r.hasTv && r.tvStatus === 'RUSAK') || r.lockStatus === 'RUSAK';
               if (!hasIssue) return false;
             }
             if (search.trim()) {
@@ -1230,7 +1230,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
 
           const facilitiesMatching = floor.facilities.filter(f => {
             if (filterMode === 'ISSUES') {
-              const hasIssue = f.wifiStatus === 'FAIL' || f.tvStatus === 'FAIL' || f.lockStatus === 'FAIL';
+              const hasIssue = f.wifiStatus === 'RUSAK' || f.tvStatus === 'RUSAK' || f.lockStatus === 'RUSAK';
               if (!hasIssue) return false;
             }
             if (search.trim()) {
@@ -1386,7 +1386,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
 
                   <div className="space-y-2">
                     {facilitiesMatching.map((fac) => {
-                      const facHasIssue = (fac.hasWifi && fac.wifiStatus === 'FAIL') || (fac.hasLock && fac.lockStatus === 'FAIL') || (fac.hasTv && fac.tvStatus === 'FAIL');
+                      const facHasIssue = (fac.hasWifi && fac.wifiStatus === 'RUSAK') || (fac.hasLock && fac.lockStatus === 'RUSAK') || (fac.hasTv && fac.tvStatus === 'RUSAK');
 
                       return (
                         <div
@@ -1501,10 +1501,10 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
                                       <button
                                         onClick={() => handleTriggerFacilityWifi(floor.id, fac)}
                                         className={`flex-1 sm:flex-initial px-1.5 sm:px-2 py-1 rounded text-[11px] font-bold active:scale-95 transition-all text-center ${
-                                          fac.wifiStatus === 'PASS' ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'
+                                          fac.wifiStatus === 'OK' ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'
                                         }`}
                                       >
-                                        {fac.wifiStatus === 'PASS' ? 'PASS' : 'FAIL'}
+                                        {fac.wifiStatus === 'OK' ? 'OK' : 'RUSAK'}
                                       </button>
                                       
                                       {/* Speedtest & dBm Scanner Trigger */}
@@ -1564,15 +1564,15 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
                                   <button
                                     onClick={() => handleOpenItemInspect('FACILITY', floor.id, fac.id, fac.name, 'TV', fac.tvStatus)}
                                     className={`w-full px-1.5 sm:px-2 py-1 rounded text-[11px] font-bold active:scale-95 transition-all truncate text-center cursor-pointer ${
-                                      fac.tvStatus === 'PASS' 
+                                      fac.tvStatus === 'OK' 
                                         ? 'bg-emerald-600 text-white' 
-                                        : fac.tvStatus === 'FAIL' 
+                                        : fac.tvStatus === 'RUSAK' 
                                         ? 'bg-rose-600 text-white' 
                                         : 'bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/30 hover:bg-purple-500/25'
                                     }`}
                                     title={fac.tvStatus === 'PENDING' ? 'TV belum diinspeksi. Klik untuk inspeksi' : 'Klik untuk ubah hasil inspeksi'}
                                   >
-                                    {fac.tvStatus === 'PASS' ? 'PASS' : fac.tvStatus === 'FAIL' ? 'FAIL' : 'Inspect'}
+                                    {fac.tvStatus === 'OK' ? 'OK' : fac.tvStatus === 'RUSAK' ? 'RUSAK' : 'Inspect'}
                                   </button>
                                 ) : (
                                   <span className="text-[10px] text-muted-foreground font-mono py-1 px-1 text-center truncate">Tanpa TV</span>
@@ -1585,15 +1585,15 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
                                   <button
                                     onClick={() => handleOpenItemInspect('FACILITY', floor.id, fac.id, fac.name, 'SMARTLOCK', fac.lockStatus)}
                                     className={`w-full px-1.5 sm:px-2 py-1 rounded text-[11px] font-bold active:scale-95 transition-all truncate text-center cursor-pointer ${
-                                      fac.lockStatus === 'PASS' 
+                                      fac.lockStatus === 'OK' 
                                         ? 'bg-emerald-600 text-white' 
-                                        : fac.lockStatus === 'FAIL' 
+                                        : fac.lockStatus === 'RUSAK' 
                                         ? 'bg-rose-600 text-white' 
                                         : 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 hover:bg-amber-500/25'
                                     }`}
                                     title={fac.lockStatus === 'PENDING' ? 'Smartlock belum diinspeksi. Klik untuk inspeksi' : 'Klik untuk ubah hasil inspeksi'}
                                   >
-                                    {fac.lockStatus === 'PASS' ? 'PASS' : fac.lockStatus === 'FAIL' ? 'FAIL' : 'Inspect'}
+                                    {fac.lockStatus === 'OK' ? 'OK' : fac.lockStatus === 'RUSAK' ? 'RUSAK' : 'Inspect'}
                                   </button>
                                 ) : (
                                   <span className="text-[10px] text-muted-foreground font-mono py-1 px-1 text-center truncate">Tanpa Smartlock</span>
@@ -1617,7 +1617,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
                           {/* Facility Snag Details Bar if any pillar is FAIL - Full Width Bar Below */}
                           {facHasIssue && (
                             <div className="w-full mt-1 pt-2.5 border-t border-rose-500/20 space-y-1.5">
-                              {fac.hasWifi && fac.wifiStatus === 'FAIL' && (
+                              {fac.hasWifi && fac.wifiStatus === 'RUSAK' && (
                                 <div className="p-2 sm:p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px]">
                                   <div className="flex items-center gap-2 min-w-0 flex-1">
                                     <Wifi className="w-4 h-4 text-rose-500 shrink-0" />
@@ -1644,7 +1644,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
                                 </div>
                               )}
 
-                              {fac.hasTv && fac.tvStatus === 'FAIL' && (
+                              {fac.hasTv && fac.tvStatus === 'RUSAK' && (
                                 <div className="p-2 sm:p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px]">
                                   <div className="flex items-center gap-2 min-w-0 flex-1">
                                     <Tv className="w-4 h-4 text-rose-500 shrink-0" />
@@ -1671,7 +1671,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
                                 </div>
                               )}
 
-                              {fac.hasLock && fac.lockStatus === 'FAIL' && (
+                              {fac.hasLock && fac.lockStatus === 'RUSAK' && (
                                 <div className="p-2 sm:p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px]">
                                   <div className="flex items-center gap-2 min-w-0 flex-1">
                                     <KeyRound className="w-4 h-4 text-rose-500 shrink-0" />
@@ -1767,7 +1767,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
 
                   <div className="space-y-2">
                     {roomsMatching.map((room) => {
-                      const hasIssue = room.wifiStatus === 'FAIL' || (room.hasTv && room.tvStatus === 'FAIL') || (room.hasSmartlock && room.lockStatus === 'FAIL');
+                      const hasIssue = room.wifiStatus === 'RUSAK' || (room.hasTv && room.tvStatus === 'RUSAK') || (room.hasSmartlock && room.lockStatus === 'RUSAK');
 
                       return (
                         <div
@@ -1798,7 +1798,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
                                     {room.hasTv ? (
                                       <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-500/30 flex items-center gap-1 min-h-[22px]" title="Template: Kamar memiliki TV">
                                         <Tv className="w-3 h-3" />
-                                        <span>{room.tvType === 'CABLE_TV' ? 'Cable TV' : 'Android TV'}</span>
+                                        <span>{tvTypeLabel(room.tvType)}</span>
                                       </span>
                                     ) : (
                                       <span className="px-1.5 py-0.5 rounded-md text-[9px] font-medium bg-muted/60 text-muted-foreground border border-border/40 flex items-center gap-1 min-h-[22px]" title="Template: Kamar tanpa TV">
@@ -1862,10 +1862,10 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
                                     <button
                                       onClick={() => handleTriggerWifiRoom(floor.id, room)}
                                       className={`flex-1 sm:flex-initial px-1.5 sm:px-2 py-1 rounded text-[11px] font-bold active:scale-95 transition-all text-center ${
-                                        room.wifiStatus === 'PASS' ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'
+                                        room.wifiStatus === 'OK' ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white'
                                       }`}
                                     >
-                                      {room.wifiStatus === 'PASS' ? 'PASS' : 'FAIL'}
+                                      {room.wifiStatus === 'OK' ? 'OK' : 'RUSAK'}
                                     </button>
                                     
                                     {/* ⚡ Speedtest & dBm Scanner Trigger */}
@@ -1922,15 +1922,15 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
                                   <button
                                     onClick={() => handleOpenItemInspect('ROOM', floor.id, room.id, `Kamar ${room.number}`, 'TV', room.tvStatus)}
                                     className={`w-full px-1.5 sm:px-2 py-1 rounded text-[11px] font-bold active:scale-95 transition-all truncate text-center cursor-pointer ${
-                                      room.tvStatus === 'PASS' 
+                                      room.tvStatus === 'OK' 
                                         ? 'bg-emerald-600 text-white' 
-                                        : room.tvStatus === 'FAIL' 
+                                        : room.tvStatus === 'RUSAK' 
                                         ? 'bg-rose-600 text-white' 
                                         : 'bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/30 hover:bg-purple-500/25'
                                     }`}
                                     title={room.tvStatus === 'PENDING' ? 'TV belum diinspeksi. Klik untuk inspeksi' : 'Klik untuk ubah hasil inspeksi'}
                                   >
-                                    {room.tvStatus === 'PASS' ? 'PASS' : room.tvStatus === 'FAIL' ? 'FAIL' : 'Inspect'}
+                                    {room.tvStatus === 'OK' ? 'OK' : room.tvStatus === 'RUSAK' ? 'RUSAK' : 'Inspect'}
                                   </button>
                                 ) : (
                                   <span className="text-[10px] text-muted-foreground font-mono py-1 px-1 text-center truncate">Tanpa TV</span>
@@ -1943,15 +1943,15 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
                                   <button
                                     onClick={() => handleOpenItemInspect('ROOM', floor.id, room.id, `Kamar ${room.number}`, 'SMARTLOCK', room.lockStatus)}
                                     className={`w-full px-1.5 sm:px-2 py-1 rounded text-[11px] font-bold active:scale-95 transition-all truncate text-center cursor-pointer ${
-                                      room.lockStatus === 'PASS' 
+                                      room.lockStatus === 'OK' 
                                         ? 'bg-emerald-600 text-white' 
-                                        : room.lockStatus === 'FAIL' 
+                                        : room.lockStatus === 'RUSAK' 
                                         ? 'bg-rose-600 text-white' 
                                         : 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 hover:bg-amber-500/25'
                                     }`}
                                     title={room.lockStatus === 'PENDING' ? 'Smartlock belum diinspeksi. Klik untuk inspeksi' : 'Klik untuk ubah hasil inspeksi'}
                                   >
-                                    {room.lockStatus === 'PASS' ? 'PASS' : room.lockStatus === 'FAIL' ? 'FAIL' : 'Inspect'}
+                                    {room.lockStatus === 'OK' ? 'OK' : room.lockStatus === 'RUSAK' ? 'RUSAK' : 'Inspect'}
                                   </button>
                                 ) : (
                                   <span className="text-[10px] text-muted-foreground font-mono py-1 px-1 text-center truncate">Tanpa Smartlock</span>
@@ -1975,7 +1975,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
                           {/* Room Snag Details Bar if any pillar is FAIL - Full Width Bar Below */}
                           {hasIssue && (
                             <div className="w-full mt-1 pt-2.5 border-t border-rose-500/20 space-y-1.5">
-                              {room.wifiStatus === 'FAIL' && (
+                              {room.wifiStatus === 'RUSAK' && (
                                 <div className="p-2 sm:p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px]">
                                   <div className="flex items-center gap-2 min-w-0 flex-1">
                                     <Wifi className="w-4 h-4 text-rose-500 shrink-0" />
@@ -2002,7 +2002,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
                                 </div>
                               )}
 
-                              {room.hasTv && room.tvStatus === 'FAIL' && (
+                              {room.hasTv && room.tvStatus === 'RUSAK' && (
                                 <div className="p-2 sm:p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px]">
                                   <div className="flex items-center gap-2 min-w-0 flex-1">
                                     <Tv className="w-4 h-4 text-rose-500 shrink-0" />
@@ -2029,7 +2029,7 @@ export const FieldEvaluationView: React.FC<FieldEvaluationViewProps> = ({
                                 </div>
                               )}
 
-                              {room.hasSmartlock && room.lockStatus === 'FAIL' && (
+                              {room.hasSmartlock && room.lockStatus === 'RUSAK' && (
                                 <div className="p-2 sm:p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px]">
                                   <div className="flex items-center gap-2 min-w-0 flex-1">
                                     <KeyRound className="w-4 h-4 text-rose-500 shrink-0" />
