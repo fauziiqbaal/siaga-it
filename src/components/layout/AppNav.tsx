@@ -165,7 +165,18 @@ export const AppNav: React.FC<AppNavProps> = ({
             <div className="flex items-center gap-2">
               <span className="text-sm font-bold tracking-tight text-foreground">Siaga IT</span>
               <Badge tone={saveTone}>{saveText}</Badge>
-              <Badge tone={syncTone} className="hidden sm:inline-flex">{syncText}</Badge>
+              {sync.conflictCount > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => setIsMoreSheetOpen(true)}
+                  title="Klik untuk menyelesaikan konflik sinkronisasi"
+                  className="hidden sm:inline-flex cursor-pointer hover:opacity-80 transition-opacity"
+                >
+                  <Badge tone={syncTone}>{syncText}</Badge>
+                </button>
+              ) : (
+                <Badge tone={syncTone} className="hidden sm:inline-flex">{syncText}</Badge>
+              )}
             </div>
             <button
               type="button"
@@ -340,11 +351,23 @@ export const AppNav: React.FC<AppNavProps> = ({
             </p>
           )}
           {sync.serverAvailable && sync.conflictCount > 0 && (
-            <p className="mt-1 text-[10px] leading-snug text-rose-700 dark:text-rose-300">
-              {sync.conflictCount} properti diubah teknisi lain hampir bersamaan. Versi server dicadangkan
-              di browser ini (kunci <code className="font-mono">siaga_it_v2:sync_conflict_backup</code>)
-              sebelum versi Anda disimpan.
-            </p>
+            <div className="mt-1.5 rounded-lg border border-rose-500/40 bg-rose-500/10 p-2.5 text-[10px] leading-snug text-rose-800 dark:text-rose-200">
+              <p className="font-bold">Terjadi bentrok versi ({sync.conflictCount} properti)</p>
+              <p className="mt-0.5">
+                Data lokal Anda telah disimpan ke server (last-write-wins). Versi server sebelumnya telah dicadangkan di penyimpanan browser ini (kunci <code className="font-mono">siaga_it_v2:sync_conflict_backup</code>).
+              </p>
+              <div className="mt-2 flex gap-1.5">
+                <Btn
+                  onClick={() => {
+                    sync.clearConflicts();
+                    setSyncNotice({ tone: 'ok', text: 'Tanda konflik telah diselesaikan.' });
+                  }}
+                  className="text-[10px] py-1 px-2.5 h-auto min-h-[30px]"
+                >
+                  Tandai Selesai (Hapus Notifikasi)
+                </Btn>
+              </div>
+            </div>
           )}
           {sync.serverAvailable ? (
             <>

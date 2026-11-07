@@ -52,6 +52,8 @@ export interface ServerSyncInfo {
   pullNow: () => Promise<SyncReport>;
   /** Lupakan baseline sinkron (reset lokal / impor backup) tanpa menghapus server. */
   resetBaseline: () => void;
+  /** Bersihkan catatan konflik setelah direview oleh teknisi/admin. */
+  clearConflicts: () => void;
 }
 
 interface PushOutcome {
@@ -648,6 +650,11 @@ export function useServerSync({ buildings, issues, onAdopt, onAck }: Args): Serv
     }
   }, []);
 
+  const clearConflicts = useCallback(() => {
+    conflictRef.current = {};
+    setConflictRef.current({});
+  }, []);
+
   return {
     state,
     serverAvailable,
@@ -658,5 +665,6 @@ export function useServerSync({ buildings, issues, onAdopt, onAck }: Args): Serv
     syncNow,
     pullNow,
     resetBaseline,
+    clearConflicts,
   };
 }
