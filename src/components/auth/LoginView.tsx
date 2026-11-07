@@ -163,9 +163,9 @@ export const LoginView: React.FC<LoginViewProps> = ({
     onLogin(activeLoggedInUser);
   };
 
-  const handleUseAdminDefault = () => {
-    setUsername('admin');
-    setPin('4569');
+  const handleUseTestAccount = () => {
+    setUsername('usertest');
+    setPin('6666');
     setErrorMessage(null);
     setErrorType(null);
   };
@@ -207,17 +207,17 @@ export const LoginView: React.FC<LoginViewProps> = ({
           {/* Quick Demo Hint */}
           <div className="rounded-lg border border-blue-500/30 bg-blue-500/10 p-3 text-[11px] text-blue-800 dark:text-blue-200">
             <div className="flex items-center justify-between gap-2">
-              <span className="font-bold">Akun Default Administrator</span>
+              <span className="font-bold">Akun Uji Lapangan (Teknisi)</span>
               <button
                 type="button"
-                onClick={handleUseAdminDefault}
+                onClick={handleUseTestAccount}
                 className="font-semibold underline hover:text-blue-600 dark:hover:text-blue-100 cursor-pointer"
               >
-                Gunakan Admin
+                Gunakan Akun Uji
               </button>
             </div>
             <p className="mt-1 text-[10px] text-blue-700 dark:text-blue-300">
-              Username: <code className="font-mono font-bold">admin</code> · PIN: <code className="font-mono font-bold">4569</code>
+              Username: <code className="font-mono font-bold">usertest</code> · PIN: <code className="font-mono font-bold">6666</code>
             </p>
           </div>
 
@@ -257,7 +257,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
                   setErrorMessage(null);
                   setErrorType(null);
                 }}
-                placeholder="admin / budi.backoffice"
+                placeholder="usertest / budi.backoffice"
                 autoFocus
               />
             </Field>

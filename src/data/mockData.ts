@@ -198,6 +198,30 @@ export const APP_USERS: SimpleUser[] = [
       'evidence',
     ],
   },
+  {
+    id: 'u-usertest',
+    username: 'usertest',
+    name: 'Teknisi Uji Lapangan',
+    role: 'TEKNISI',
+    roleTitle: 'Teknisi IT Lapangan',
+    email: 'usertest@siagait.com',
+    phone: '0812-6666-6666',
+    pin: '6666',
+    isActive: true,
+    avatarColor: 'bg-emerald-600',
+    createdAt: '01 Nov 2026',
+    failedAttempts: 0,
+    lockedUntil: null,
+    isBlocked: false,
+    permissions: [
+      'property',
+      'devices',
+      'cctv',
+      'evaluation',
+      'issues',
+      'evidence',
+    ],
+  },
 ];
 
 export function generateCCTVPoints(): CCTVPoint[] {

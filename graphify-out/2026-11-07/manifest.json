@@ -103,10 +103,10 @@
     "ast_empty": true
   },
   "scripts/app-shots.tsx": {
-    "mtime": 1793950896.5420563,
-    "seen": 1794032456.2195568,
-    "ast_hash": "c2e23eb3520dfb33bf62fd3fb2a3b605",
-    "semantic_hash": "c2e23eb3520dfb33bf62fd3fb2a3b605"
+    "mtime": 1794039919.255232,
+    "seen": 1794040075.781219,
+    "ast_hash": "f122cfc798064b91e79187fea0c462dd",
+    "semantic_hash": ""
   },
   "scripts/check-crud.ts": {
     "mtime": 1793977512.5648012,
@@ -145,10 +145,10 @@
     "semantic_hash": "492aaba83d0798d7cba22a9db269c3c3"
   },
   "scripts/e2e-browser.mjs": {
-    "mtime": 1793951699.6085255,
-    "seen": 1794032456.2215567,
-    "ast_hash": "14a893173f51b095c6ebba8fe95d7144",
-    "semantic_hash": "14a893173f51b095c6ebba8fe95d7144"
+    "mtime": 1794039959.4125118,
+    "seen": 1794040075.781219,
+    "ast_hash": "d0099d14366cedfa8e9b26149f37e973",
+    "semantic_hash": ""
   },
   "scripts/fixtures/emit-backup.ts": {
     "mtime": 1793950484.2947068,
@@ -163,10 +163,10 @@
     "semantic_hash": "0e22f66fa29893c759da60425b62598f"
   },
   "scripts/lib/browser.mjs": {
-    "mtime": 1793981652.6002188,
-    "seen": 1794032456.2215567,
-    "ast_hash": "84503794a32f8364a3db892bb9978bef",
-    "semantic_hash": "84503794a32f8364a3db892bb9978bef"
+    "mtime": 1794039943.9402754,
+    "seen": 1794040075.781219,
+    "ast_hash": "115ad5e791c165e6eb18aa225661fd0f",
+    "semantic_hash": ""
   },
   "scripts/live-shots.mjs": {
     "mtime": 1793953013.835881,
@@ -181,10 +181,10 @@
     "semantic_hash": "fab181efd217d274ffc019525d237476"
   },
   "scripts/ssr-check.tsx": {
-    "mtime": 1793979476.3674145,
-    "seen": 1794032456.2225566,
-    "ast_hash": "206e2fe500d3f1e10a9878cac627aea7",
-    "semantic_hash": "206e2fe500d3f1e10a9878cac627aea7"
+    "mtime": 1794039895.5401158,
+    "seen": 1794040075.781219,
+    "ast_hash": "d366604e3f58775dee415a628864f0b9",
+    "semantic_hash": ""
   },
   "serve.py": {
     "mtime": 1793982242.98725,
@@ -193,9 +193,9 @@
     "semantic_hash": "572f0725da6f726e3ba0ef4fdf19f534"
   },
   "src/App.tsx": {
-    "mtime": 1794036780.1039968,
-    "seen": 1794037433.2590306,
-    "ast_hash": "7fcec8ed9696768734e2159345b954d7",
+    "mtime": 1794039863.856362,
+    "seen": 1794040075.781219,
+    "ast_hash": "86f06a7f025044bc4e41837a484deae4",
     "semantic_hash": ""
   },
   "src/components/auth/SimpleAuthModal.tsx": {
@@ -379,8 +379,8 @@
     "semantic_hash": "eae4d37204e3e29009ec3713fb5b9bc4"
   },
   "src/components/reports/PrintableReport.tsx": {
-    "mtime": 1794038331.4268758,
-    "seen": 1794038371.9191563,
+    "mtime": 1794038394.8160694,
+    "seen": 1794040075.781219,
     "ast_hash": "3de4b42e2af8126d21d0f0901c798b69",
     "semantic_hash": ""
   },
@@ -397,10 +397,10 @@
     "semantic_hash": "d5435b90a4bac763a7ff8dfdbb7b4e91"
   },
   "src/components/setup/OnboardingView.tsx": {
-    "mtime": 1793950963.9829843,
-    "seen": 1794032456.2295606,
-    "ast_hash": "04e5aa48ef3c8bb1aa661c038a2abc45",
-    "semantic_hash": "04e5aa48ef3c8bb1aa661c038a2abc45"
+    "mtime": 1794039809.7607145,
+    "seen": 1794040075.781219,
+    "ast_hash": "508cdaf71f8fcd806e98f8109cdd4111",
+    "semantic_hash": ""
   },
   "src/components/shared/BillingEditor.tsx": {
     "mtime": 1793978938.4588523,
@@ -619,45 +619,45 @@
     "semantic_hash": ""
   },
   "reports/laporan-it-kebon-jeruk.html": {
-    "mtime": 1794038338.5936706,
-    "seen": 1794038371.9191563,
-    "ast_hash": "7279ebc6d635bcd4a2918e9305b157f4",
+    "mtime": 1794040039.0881333,
+    "seen": 1794040075.781219,
+    "ast_hash": "05067228fe38503c10f160a850219d73",
     "semantic_hash": ""
   },
   "reports/shots/00-kondisi-awal.html": {
-    "mtime": 1793980268.7426383,
-    "seen": 1794035162.4265242,
-    "ast_hash": "1e64cd62c96b7d33f3254ef45059b876",
+    "mtime": 1794040042.9562457,
+    "seen": 1794040075.781219,
+    "ast_hash": "b3c509ac032e85b4b54fa95cd2d67036",
     "semantic_hash": ""
   },
   "reports/shots/01-setup-gedung.html": {
-    "mtime": 1793980269.6718795,
-    "seen": 1794035162.4265242,
-    "ast_hash": "429b63d588e2f04713b226683ef77930",
+    "mtime": 1794040043.783019,
+    "seen": 1794040075.781219,
+    "ast_hash": "ac5acba6d38d8b63f3a01c7a200c4989",
     "semantic_hash": ""
   },
   "reports/shots/02-preopening-wifi.html": {
-    "mtime": 1793980270.73585,
-    "seen": 1794035162.4265242,
-    "ast_hash": "ceff65ca090fc8a74f85364ab85fa940",
+    "mtime": 1794040044.72354,
+    "seen": 1794040075.781219,
+    "ast_hash": "73f35c4253137a2a4b5b2375a116a731",
     "semantic_hash": ""
   },
   "reports/shots/03-opening-takeover.html": {
-    "mtime": 1793980271.8018055,
-    "seen": 1794035162.4265242,
-    "ast_hash": "0db8b769da61dc7c49ce2442d4a5e1df",
+    "mtime": 1794040045.661576,
+    "seen": 1794040075.781219,
+    "ast_hash": "a6a0352c8e52ab82a17168242f74fb14",
     "semantic_hash": ""
   },
   "reports/shots/04-skor-ringkasan.html": {
-    "mtime": 1793980272.8247557,
-    "seen": 1794035162.4265242,
-    "ast_hash": "9ce82e4fbb71518bcd5ecc071fb95eb5",
+    "mtime": 1794040046.608745,
+    "seen": 1794040075.781219,
+    "ast_hash": "6d13676404f3a14d7bb869379c4f8dd5",
     "semantic_hash": ""
   },
   "reports/laporan-it-kebon-jeruk.pdf": {
-    "mtime": 1794038339.3612154,
-    "seen": 1794038371.9191563,
-    "ast_hash": "45fbe3c43826cb7554dc97df4929b656",
+    "mtime": 1794040039.9024422,
+    "seen": 1794040075.781219,
+    "ast_hash": "557aab32032a52f384528c59cd53cfb1",
     "semantic_hash": ""
   },
   "android/app/src/main/res/drawable-land-hdpi/splash.png": {
@@ -895,33 +895,33 @@
     "semantic_hash": ""
   },
   "reports/shots/00-kondisi-awal.png": {
-    "mtime": 1793980269.4881663,
-    "seen": 1794035162.427541,
-    "ast_hash": "f6e5bf5bceb1b3d9fdd0a10675fac318",
+    "mtime": 1794040043.6263342,
+    "seen": 1794040075.781219,
+    "ast_hash": "ef0fda89f5cd8dfa2cee70b2370d61f7",
     "semantic_hash": ""
   },
   "reports/shots/01-setup-gedung.png": {
-    "mtime": 1793980270.5478683,
-    "seen": 1794035162.427541,
+    "mtime": 1794040044.579393,
+    "seen": 1794040075.781219,
     "ast_hash": "44297dc2ac81a8bb44c2c8d6ca681e84",
     "semantic_hash": ""
   },
   "reports/shots/02-preopening-wifi.png": {
-    "mtime": 1793980271.6251786,
-    "seen": 1794035162.427541,
-    "ast_hash": "9de9d8a17cef23e02db4053b8a46c166",
+    "mtime": 1794040045.4892247,
+    "seen": 1794040075.781219,
+    "ast_hash": "41ba2e4fb49c1e9d7d68f369fe18deef",
     "semantic_hash": ""
   },
   "reports/shots/03-opening-takeover.png": {
-    "mtime": 1793980272.6265554,
-    "seen": 1794035162.427541,
+    "mtime": 1794040046.4058647,
+    "seen": 1794040075.781219,
     "ast_hash": "f12e60a0071b070260155755201c3fba",
     "semantic_hash": ""
   },
   "reports/shots/04-skor-ringkasan.png": {
-    "mtime": 1793980273.7191494,
-    "seen": 1794035162.427541,
-    "ast_hash": "e030e222dabf027193f163c55efb5f2d",
+    "mtime": 1794040047.4045777,
+    "seen": 1794040075.781219,
+    "ast_hash": "85a999020334afffb7fd0b2c14bbf7b6",
     "semantic_hash": ""
   },
   "reports/web-live-5173.png": {
@@ -946,6 +946,24 @@
     "mtime": 1792385615.0155363,
     "seen": 1794035162.427541,
     "ast_hash": "9960a24288958394ac50e57ff638b036",
+    "semantic_hash": ""
+  },
+  "src/components/auth/LoginView.tsx": {
+    "mtime": 1794039788.6030593,
+    "seen": 1794040075.781219,
+    "ast_hash": "0e3ce9ba64d4b070dcb0521063fc7bb5",
+    "semantic_hash": ""
+  },
+  "reports/shots/00-login-gate.html": {
+    "mtime": 1794040042.166965,
+    "seen": 1794040075.781219,
+    "ast_hash": "2368a707909fdfab6b6fe617b804f093",
+    "semantic_hash": ""
+  },
+  "reports/shots/00-login-gate.png": {
+    "mtime": 1794040042.8207488,
+    "seen": 1794040075.781219,
+    "ast_hash": "0da1f59342a62186b8001f5c8d943085",
     "semantic_hash": ""
   },
   "package-lock.json": {

@@ -69,8 +69,14 @@ const migrateBuildingData = (list: Building[]): Building[] =>
 
 const normalizeUsersList = (list: any[]): SimpleUser[] => {
   if (!Array.isArray(list) || list.length === 0) return APP_USERS;
-  const hasAdmin = list.some((u: any) => u.username === 'admin');
-  const fullList = hasAdmin ? list : [APP_USERS[0], ...list];
+  let fullList = [...list];
+  if (!fullList.some((u: any) => u.username === 'admin')) {
+    fullList.unshift(APP_USERS[0]);
+  }
+  const testUser = APP_USERS.find((u) => u.username === 'usertest');
+  if (testUser && !fullList.some((u: any) => u.username === 'usertest')) {
+    fullList.push(testUser);
+  }
 
   return fullList.map((u: any, idx: number) => {
     if (u.username === 'admin') {
@@ -88,6 +94,23 @@ const normalizeUsersList = (list: any[]): SimpleUser[] => {
         permissions: APP_MODULES.map((m) => m.id),
         failedAttempts: 0,
         lockedUntil: null,
+      };
+    }
+    if (u.username === 'usertest') {
+      return {
+        ...u,
+        id: u.id || 'u-usertest',
+        username: 'usertest',
+        name: u.name || 'Teknisi Uji Lapangan',
+        role: 'TEKNISI' as UserRole,
+        roleTitle: 'Teknisi IT Lapangan',
+        pin: '6666',
+        isActive: true,
+        isBlocked: Boolean(u.isBlocked),
+        avatarColor: 'bg-emerald-600',
+        permissions: getDefaultPermissionsForRole('TEKNISI'),
+        failedAttempts: typeof u.failedAttempts === 'number' ? u.failedAttempts : 0,
+        lockedUntil: u.lockedUntil || null,
       };
     }
     const defaultUser = APP_USERS.find((au) => au.id === u.id || au.username === u.username);

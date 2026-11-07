@@ -254,7 +254,7 @@ export const SimpleAuthModal: React.FC<SimpleAuthModalProps> = ({
           <div className="rounded-lg border border-blue-500/30 bg-blue-500/10 p-2.5 text-[11px] text-blue-800 dark:text-blue-200">
             <p className="font-bold">Sesi belum aktif</p>
             <p className="mt-0.5 text-[10px] leading-snug">
-              Akun default Administrator: username <code className="font-mono font-bold">admin</code> · PIN <code className="font-mono font-bold">4569</code>
+              Akun uji teknisi: username <code className="font-mono font-bold">usertest</code> · PIN <code className="font-mono font-bold">6666</code>
             </p>
           </div>
         )}
@@ -294,7 +294,7 @@ export const SimpleAuthModal: React.FC<SimpleAuthModalProps> = ({
               setErrorMessage(null);
               setErrorType(null);
             }}
-            placeholder="admin / budi.backoffice"
+            placeholder="usertest / budi.backoffice"
             autoFocus
           />
         </Field>
