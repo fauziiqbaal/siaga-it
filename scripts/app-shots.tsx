@@ -71,9 +71,11 @@ interface ShotSpec {
   width: number;
   height: number;
   empty?: boolean;
+  loginOnly?: boolean;
 }
 
 const SHOTS: ShotSpec[] = [
+  { name: '00-login-gate', tab: 'login', width: 1100, height: 900, loginOnly: true },
   { name: '00-kondisi-awal', tab: 'setup', width: 1100, height: 1000, empty: true },
   { name: '01-setup-gedung', tab: 'setup', width: 1280, height: 1500 },
   { name: '02-preopening-wifi', tab: 'preopening', width: 1280, height: 1650 },
@@ -92,6 +94,9 @@ const chrome = chromeCandidates.find((candidate) => fs.existsSync(candidate));
 
 for (const spec of SHOTS) {
   store.clear();
+  if (!spec.loginOnly) {
+    store.set('siaga_it_current_user_id', 'u-admin');
+  }
   store.set('siaga_it_v2:buildings', envelope(spec.empty ? [] : [building]));
   store.set('siaga_it_v2:issues', envelope(spec.empty ? [] : issues));
   store.set('siaga_it_v2:active_building', envelope(spec.empty ? '' : building.id));

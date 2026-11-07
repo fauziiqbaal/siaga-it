@@ -50,6 +50,7 @@ const localStorageStub = {
 };
 
 // Seed data contoh HANYA untuk uji render (aplikasi aslinya mulai kosong).
+store.set('siaga_it_current_user_id', 'u-admin');
 store.set('siaga_it_v2:buildings', envelope(SAMPLE_BUILDINGS));
 store.set('siaga_it_v2:issues', envelope(SAMPLE_ISSUES));
 store.set('siaga_it_v2:active_building', envelope(SAMPLE_BUILDINGS[0].id));
@@ -158,6 +159,13 @@ console.log('Gedung user tampil:', customHtml.includes('Gedung Uji Coba') ? 'OK'
 console.log('Properti demo tidak muncul:', customHtml.includes('Rukita Tawakal Tomang') ? 'RUSAK' : 'OK');
 if (!customHtml.includes('Gedung Uji Coba')) throw new Error('gedung buatan user tidak dirender');
 if (customHtml.includes('Rukita Tawakal Tomang')) throw new Error('properti demo masih muncul di aplikasi');
+
+// --- Kondisi awal belum login: wajib tampil form login ---
+store.delete('siaga_it_current_user_id');
+const loginGateOutput = renderToStaticMarkup(React.createElement(App));
+const hasLoginGate = loginGateOutput.includes('Masuk ke Sistem');
+console.log('Kondisi awal belum login (login gate):', hasLoginGate ? 'OK' : 'MISSING');
+if (!hasLoginGate) throw new Error('layar login gate tidak muncul saat belum ada sesi user');
 
 console.log('OK — render smoke test passed');
 

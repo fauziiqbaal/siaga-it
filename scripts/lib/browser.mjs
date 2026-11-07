@@ -75,7 +75,13 @@ export async function startPythonServer({ port, apiPort, dataDir }) {
 
 
 /** Buka Chrome headless dan kembalikan API CDP yang ringkas. */
-export async function openBrowser({ baseUrl, profileSuffix = '', debugPort, windowSize = { width: 1280, height: 900 } }) {
+export async function openBrowser({
+  baseUrl,
+  profileSuffix = '',
+  debugPort,
+  windowSize = { width: 1280, height: 900 },
+  autoLogin = true,
+}) {
   const chromePath = findChrome();
   if (!chromePath) throw new Error('Chrome tidak ditemukan.');
 
@@ -202,6 +208,15 @@ export async function openBrowser({ baseUrl, profileSuffix = '', debugPort, wind
 
   await send('Page.enable');
   await send('Runtime.enable');
+  if (autoLogin) {
+    await send('Page.addScriptToEvaluateOnNewDocument', {
+      source: `
+        try {
+          localStorage.setItem('siaga_it_current_user_id', 'u-admin');
+        } catch (e) {}
+      `,
+    });
+  }
   await navigate(baseUrl);
 
   return { send, evaluate, waitFor, navigate, close, bodyText: () => evaluate('document.body.innerText') };

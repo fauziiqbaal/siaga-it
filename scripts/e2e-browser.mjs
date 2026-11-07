@@ -159,10 +159,33 @@ try {
   await evaluate('localStorage.clear()');
   await send('Page.reload', { ignoreCache: true });
   await waitFor('document.readyState === "complete"', 'reload pertama');
+  await waitFor('document.body.innerText.includes("Masuk ke Sistem")', 'layar login wajib');
+  console.log('1. Kondisi awal belum login: layar login wajib tampil — OK');
+
+  // Login dengan admin / 4569 lewat UI
+  const loggedIn = await evaluate(`(() => {
+    const setValue = (el, value) => {
+      const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+      setter.call(el, value);
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    };
+    const inputs = Array.from(document.querySelectorAll('input')).filter((el) => el.type !== 'file');
+    if (inputs.length < 2) return 'input login tidak ditemukan';
+    setValue(inputs[0], 'admin');
+    setValue(inputs[1], '4569');
+    const button = Array.from(document.querySelectorAll('button')).find((el) =>
+      el.textContent.includes('Masuk ke aplikasi'),
+    );
+    if (!button) return 'tombol masuk tidak ditemukan';
+    button.click();
+    return 'ok';
+  })()`);
+  assert(loggedIn === 'ok', `login gagal (${loggedIn})`);
+
   await waitFor('document.body.innerText.includes("Belum ada properti")', 'layar onboarding');
   const initialText = await bodyText();
   assert(!initialText.includes('Rukita Tawakal Tomang'), 'properti demo muncul di kondisi awal');
-  console.log('1. Kondisi awal kosong + tanpa properti demo — OK');
+  console.log('1b. Berhasil login: layar onboarding tampil tanpa properti demo — OK');
 
   // Isi form gedung baru lewat UI.
   const created = await evaluate(`(() => {

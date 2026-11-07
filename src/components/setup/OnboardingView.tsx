@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import type { Building } from '../../types/hotel';
+import type { Building, SimpleUser } from '../../types/hotel';
 import { Badge, Btn, Card, Field, Segmented, TextInput } from '../ui/kit';
 import { buildBuildingFromDraft } from '../shared/buildingFactory';
 import type { SaveStatus } from '../../hooks/usePersistentState';
@@ -10,6 +10,9 @@ interface Props {
   onImportBackup: (file: File) => void;
   saveStatus: SaveStatus;
   storage: StorageHealth;
+  currentUser?: SimpleUser | null;
+  onOpenAuth?: () => void;
+  onLogout?: () => void;
 }
 
 /**
@@ -18,7 +21,15 @@ interface Props {
  * Aplikasi ini TIDAK memuat data contoh: gedung pertama dibuat di sini, lalu
  * seluruh isian (lantai, kamar, uji QC, takeover) tersimpan di browser.
  */
-export const OnboardingView: React.FC<Props> = ({ onCreateBuilding, onImportBackup, saveStatus, storage }) => {
+export const OnboardingView: React.FC<Props> = ({
+  onCreateBuilding,
+  onImportBackup,
+  saveStatus,
+  storage,
+  currentUser,
+  onOpenAuth,
+  onLogout,
+}) => {
   const importRef = useRef<HTMLInputElement | null>(null);
   const [form, setForm] = useState({
     name: '',
@@ -44,9 +55,35 @@ export const OnboardingView: React.FC<Props> = ({ onCreateBuilding, onImportBack
           <h1 className="text-base font-bold tracking-tight text-foreground">Siaga IT</h1>
           <p className="text-[11px] text-muted-foreground">Checklist pre-opening &amp; opening tim IT — properti coliving</p>
         </div>
-        <Badge tone={saveStatus === 'error' ? 'red' : 'green'}>
-          {saveStatus === 'error' ? 'gagal simpan' : storage.available ? 'siap dipakai' : 'tanpa simpan'}
-        </Badge>
+        <div className="flex items-center gap-2">
+          {currentUser && (
+            <div className="flex items-center gap-1.5">
+              <span className="text-[11px] font-semibold text-foreground">{currentUser.name}</span>
+              <Badge tone="blue">{currentUser.role}</Badge>
+              {onOpenAuth && (
+                <button
+                  type="button"
+                  onClick={onOpenAuth}
+                  className="text-[10px] text-muted-foreground hover:text-foreground underline ml-1"
+                >
+                  Ganti
+                </button>
+              )}
+              {onLogout && (
+                <button
+                  type="button"
+                  onClick={onLogout}
+                  className="text-[10px] text-rose-600 dark:text-rose-400 hover:underline ml-1"
+                >
+                  Keluar
+                </button>
+              )}
+            </div>
+          )}
+          <Badge tone={saveStatus === 'error' ? 'red' : 'green'}>
+            {saveStatus === 'error' ? 'gagal simpan' : storage.available ? 'siap dipakai' : 'tanpa simpan'}
+          </Badge>
+        </div>
       </div>
 
       <Card className="mt-3 p-3.5">

@@ -16,6 +16,7 @@ import { NewBuildingModal } from './components/building/NewBuildingModal';
 import { BuildingSearchModal } from './components/building/BuildingSearchModal';
 import { DeleteBuildingModal } from './components/building/DeleteBuildingModal';
 import { SimpleAuthModal } from './components/auth/SimpleAuthModal';
+import { LoginView } from './components/auth/LoginView';
 import { EvidenceExplorerModal } from './components/common/EvidenceExplorerModal';
 import { LiveReadinessReport } from './components/readiness/LiveReadinessReport';
 import { OpeningCalendarView } from './components/calendar/OpeningCalendarView';
@@ -186,7 +187,7 @@ export function App() {
       console.error('Error clearing user session:', e);
     }
     setCurrentUser(null);
-    setIsAuthOpen(true);
+    setIsAuthOpen(false);
   };
 
   const handleAddUser = (newUser: SimpleUser) => {
@@ -434,6 +435,19 @@ export function App() {
     alert(`Properti "${target?.name || 'Gedung'}" dihapus. Data kendala terkait juga dihapus.`);
   };
 
+  // ---- Belum ada sesi login: wajib login terlebih dahulu ----
+  if (!currentUser) {
+    return (
+      <LoginView
+        users={users}
+        onLogin={handleSelectUser}
+        onUpdateUser={handleUpdateUser}
+        isDark={isDark}
+        onToggleTheme={() => setIsDark(!isDark)}
+      />
+    );
+  }
+
   // ---- Belum ada properti: onboarding, bukan data contoh ----
   if (!currentBuilding) {
     return (
@@ -443,13 +457,13 @@ export function App() {
           onImportBackup={handleImportBackup}
           saveStatus={buildingsStore.status}
           storage={storageHealth}
+          currentUser={currentUser}
+          onOpenAuth={() => setIsAuthOpen(true)}
+          onLogout={handleLogout}
         />
         <SimpleAuthModal
-          isOpen={isAuthOpen || !currentUser}
-          onClose={() => {
-            if (currentUser) setIsAuthOpen(false);
-          }}
-          isMandatory={!currentUser}
+          isOpen={isAuthOpen}
+          onClose={() => setIsAuthOpen(false)}
           currentUser={currentUser}
           users={users}
           onSelectUser={handleSelectUser}
@@ -1093,13 +1107,10 @@ export function App() {
         onConfirmDelete={handleDeleteBuilding}
       />
 
-      {/* Modal Login & Teknisi */}
+      {/* Modal Switch User & Verifikasi */}
       <SimpleAuthModal
-        isOpen={isAuthOpen || !currentUser}
-        onClose={() => {
-          if (currentUser) setIsAuthOpen(false);
-        }}
-        isMandatory={!currentUser}
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
         currentUser={currentUser}
         users={users}
         onSelectUser={handleSelectUser}

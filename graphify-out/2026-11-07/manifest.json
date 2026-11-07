@@ -343,8 +343,8 @@
     "semantic_hash": "8db2bc78c59bd62a4c9232591cb34c30"
   },
   "src/components/preopening/PreOpeningView.tsx": {
-    "mtime": 1794037601.4637558,
-    "seen": 1794037632.5563328,
+    "mtime": 1794037764.123422,
+    "seen": 1794038107.5408685,
     "ast_hash": "61ceab467fc8c3ca25056f4116e61a14",
     "semantic_hash": ""
   },
@@ -379,16 +379,16 @@
     "semantic_hash": "eae4d37204e3e29009ec3713fb5b9bc4"
   },
   "src/components/reports/PrintableReport.tsx": {
-    "mtime": 1793980401.0100186,
-    "seen": 1794032456.2295606,
-    "ast_hash": "71725dd967a121f114b28be1d077e2d1",
-    "semantic_hash": "71725dd967a121f114b28be1d077e2d1"
+    "mtime": 1794038331.4268758,
+    "seen": 1794038371.9191563,
+    "ast_hash": "3de4b42e2af8126d21d0f0901c798b69",
+    "semantic_hash": ""
   },
   "src/components/reports/ScoreReportView.tsx": {
-    "mtime": 1793980415.4449391,
-    "seen": 1794032456.2295606,
-    "ast_hash": "1fdcadf6b061be85572903a7e447e476",
-    "semantic_hash": "1fdcadf6b061be85572903a7e447e476"
+    "mtime": 1794038126.4289694,
+    "seen": 1794038371.9191563,
+    "ast_hash": "1116f73fa5b7324d35001e48233ae82e",
+    "semantic_hash": ""
   },
   "src/components/setup/BuildingSetupView.tsx": {
     "mtime": 1793978470.2631564,
@@ -487,10 +487,10 @@
     "semantic_hash": "787e5a07efeb2bf6209d5937195f2f68"
   },
   "src/types/hotel.ts": {
-    "mtime": 1793980884.2452226,
-    "seen": 1794032456.233068,
-    "ast_hash": "b79852e3f9726962548540b702ad9304",
-    "semantic_hash": "b79852e3f9726962548540b702ad9304"
+    "mtime": 1794037877.5924032,
+    "seen": 1794038107.5408685,
+    "ast_hash": "879f0c454e024a11baec763ffd81e6ac",
+    "semantic_hash": ""
   },
   "src/utils/dateUtils.ts": {
     "mtime": 1792398133.1656039,
@@ -511,9 +511,9 @@
     "semantic_hash": "e8493f43a707e439074786fb4df15f39"
   },
   "src/utils/scoring.ts": {
-    "mtime": 1794037557.8562877,
-    "seen": 1794037632.5563328,
-    "ast_hash": "b5df782e7c5b4f16d53e2b36c29f1c27",
+    "mtime": 1794038126.5617926,
+    "seen": 1794038371.9191563,
+    "ast_hash": "975f765f98c613fe5f796ab165f346e5",
     "semantic_hash": ""
   },
   "tailwind.config.js": {
@@ -619,9 +619,9 @@
     "semantic_hash": ""
   },
   "reports/laporan-it-kebon-jeruk.html": {
-    "mtime": 1794037423.4145577,
-    "seen": 1794037433.2600307,
-    "ast_hash": "1dba78d0a6b4926f18dc1d78517823b1",
+    "mtime": 1794038338.5936706,
+    "seen": 1794038371.9191563,
+    "ast_hash": "7279ebc6d635bcd4a2918e9305b157f4",
     "semantic_hash": ""
   },
   "reports/shots/00-kondisi-awal.html": {
@@ -655,9 +655,9 @@
     "semantic_hash": ""
   },
   "reports/laporan-it-kebon-jeruk.pdf": {
-    "mtime": 1794037424.1963964,
-    "seen": 1794037433.2600307,
-    "ast_hash": "77625098e08a4767900fff97b094c93c",
+    "mtime": 1794038339.3612154,
+    "seen": 1794038371.9191563,
+    "ast_hash": "45fbe3c43826cb7554dc97df4929b656",
     "semantic_hash": ""
   },
   "android/app/src/main/res/drawable-land-hdpi/splash.png": {

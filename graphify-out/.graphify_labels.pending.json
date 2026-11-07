@@ -1,6 +1,16 @@
 {
-  "1": "Building",
+  "1": "useServerSync.ts",
   "4": "scoring.ts",
-  "19": "App",
-  "26": "live-shots.mjs"
+  "8": "hotel.ts",
+  "11": "Building",
+  "19": "LiveDashboardView.tsx",
+  "21": "ColivingIssue",
+  "22": "App.tsx",
+  "23": "ssr-check.tsx",
+  "24": "check-storage.ts",
+  "26": "check-native.mjs",
+  "30": "CCTVChecklist.tsx",
+  "42": "FloorDeviceInventory.tsx",
+  "43": "react-dom",
+  "44": "SaveStatus"
 }
