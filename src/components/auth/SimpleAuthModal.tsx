@@ -227,7 +227,7 @@ export const SimpleAuthModal: React.FC<SimpleAuthModalProps> = ({
     >
       <form onSubmit={handleLoginSubmit} className="space-y-3">
         {/* Info akun aktif saat ini jika ada */}
-        {currentUser ? (
+        {currentUser && (
           <div className="rounded-lg border border-border p-2.5">
             <div className="flex items-center justify-between">
               <span className="text-[10px] text-muted-foreground">Saat ini login:</span>
@@ -248,62 +248,6 @@ export const SimpleAuthModal: React.FC<SimpleAuthModalProps> = ({
                   Keluar dari sesi ini
                 </button>
               )}
-            </div>
-          </div>
-        ) : (
-          <div className="rounded-lg border border-blue-500/30 bg-blue-500/10 p-2.5 text-[11px] text-blue-800 dark:text-blue-200">
-            <p className="font-bold">Sesi belum aktif</p>
-            <p className="mt-0.5 text-[10px] leading-snug">
-              Akun uji teknisi: username <code className="font-mono font-bold">usertest</code> · PIN <code className="font-mono font-bold">6666</code>
-            </p>
-          </div>
-        )}
-
-        {/* Quick User Picker */}
-        {users.length > 0 && (
-          <div className="space-y-1.5 pt-1">
-            <div className="flex items-center justify-between text-[11px] text-muted-foreground">
-              <span className="font-medium text-foreground">Pilih Cepat Akun ({users.length}):</span>
-              <span className="text-[10px]">PIN Tim: 1234</span>
-            </div>
-            <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto p-2 rounded-lg border border-border/70 bg-muted/20">
-              {users.map((u) => {
-                const isSelected = username.trim().toLowerCase() === (u.username || '').toLowerCase();
-                return (
-                  <button
-                    key={u.id}
-                    type="button"
-                    onClick={() => {
-                      setUsername(u.username);
-                      if (u.pin === '1234' || u.pin === '6666' || u.pin === '4569') {
-                        setPin(u.pin);
-                      }
-                      setErrorMessage(null);
-                      setErrorType(null);
-                    }}
-                    className={`px-2 py-1 rounded text-[11px] font-medium transition-all cursor-pointer flex items-center gap-1.5 ${
-                      isSelected
-                        ? 'bg-primary text-primary-foreground font-semibold shadow-xs'
-                        : 'bg-card hover:bg-muted text-foreground border border-border/80'
-                    }`}
-                  >
-                    <span>@{u.username}</span>
-                    {u.role === 'ADMIN' ? (
-                      <span className="text-[9px] px-1 py-0.2 rounded bg-indigo-500/20 text-indigo-500 dark:text-indigo-300 font-bold">
-                        Admin
-                      </span>
-                    ) : u.role === 'BACKOFFICE' ? (
-                      <span className="text-[9px] px-1 py-0.2 rounded bg-blue-500/20 text-blue-500 dark:text-blue-300 font-medium">
-                        Backoffice
-                      </span>
-                    ) : (
-                      <span className="text-[9px] px-1 py-0.2 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-medium">
-                        Teknisi
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
             </div>
           </div>
         )}

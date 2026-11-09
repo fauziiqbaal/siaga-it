@@ -1,12 +1,12 @@
 # Graph Report - IT Opening  (2026-11-09)
 
 ## Corpus Check
-- 93 files · ~158,796 words
+- 93 files · ~158,839 words
 - Verdict: corpus is large enough that graph structure adds value.
-- Unclassified: 36 file(s) not represented in the graph (top: .css 17, .xml 10, (none) 4)
+- Unclassified: 37 file(s) not represented in the graph (top: .css 18, .xml 10, (none) 4)
 
 ## Summary
-- 810 nodes · 2033 edges · 40 communities (29 shown, 11 thin omitted)
+- 810 nodes · 2036 edges · 40 communities (29 shown, 11 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 5 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
@@ -26,7 +26,7 @@
 - PreToolUse
 - hotel.ts
 - check-sync.mjs
-- FloorPlanDrawingModal.tsx
+- FieldEvaluationView.tsx
 - live-shots.mjs
 - package.json
 - scripts
@@ -40,7 +40,7 @@
 - App.tsx
 - ssr-check.tsx
 - LiveDashboardView.tsx
-- useBackNavigation.ts
+- ColivingIssue
 - app-shots.tsx
 - .oxlintrc.json
 - MainActivity.java
@@ -65,12 +65,12 @@
   scripts/fixtures/sample-property.ts → src/types/hotel.ts
 - `SampleProperty` --references--> `ColivingIssue`  [EXTRACTED]
   scripts/fixtures/sample-property.ts → src/types/hotel.ts
+- `Props` --references--> `Building`  [EXTRACTED]
+  src/components/common/SpeedtestSheet.tsx → src/types/hotel.ts
 - `NewBuildingModalProps` --references--> `Building`  [EXTRACTED]
   src/components/building/NewBuildingModal.tsx → src/types/hotel.ts
 - `EvidenceExplorerModalProps` --references--> `Building`  [EXTRACTED]
   src/components/common/EvidenceExplorerModal.tsx → src/types/hotel.ts
-- `Props` --references--> `Building`  [EXTRACTED]
-  src/components/common/SpeedtestSheet.tsx → src/types/hotel.ts
 
 ## Import Cycles
 - None detected.
@@ -79,7 +79,7 @@
 
 ### Community 0 - "PreOpeningView.tsx"
 Cohesion: 0.09
-Nodes (63): LoginView(), SimpleAuthModal(), AppNav(), AppNavProps, formatSaved(), isMoreActive(), LEGACY_TAB_IDS, MAIN_TABS (+55 more)
+Nodes (64): react, LoginView(), SimpleAuthModal(), AppNav(), AppNavProps, formatSaved(), isMoreActive(), LEGACY_TAB_IDS (+56 more)
 
 ### Community 1 - "useServerSync.ts"
 Cohesion: 0.16
@@ -87,7 +87,7 @@ Nodes (24): ConflictBackups, describeHttpFailure(), fingerprint(), issuesOf(), p
 
 ### Community 2 - "FieldEvaluationView.tsx"
 Cohesion: 0.08
-Nodes (47): EvidenceCaptureModal(), EvidenceCaptureModalProps, EvidenceExplorerModal(), EvidenceExplorerModalProps, AnnotationItem, AnnotationTool, COLOR_OPTIONS, ImageAnnotationModal() (+39 more)
+Nodes (49): EvidenceCaptureModal(), EvidenceCaptureModalProps, EvidenceExplorerModal(), EvidenceExplorerModalProps, AnnotationItem, AnnotationTool, COLOR_OPTIONS, ImageAnnotationModal() (+41 more)
 
 ### Community 3 - "serve.py"
 Cohesion: 0.09
@@ -110,16 +110,16 @@ Cohesion: 0.11
 Nodes (11): EXT, files, LIMIT, offenders, ROOT, SKIP_DIRS, STRICT, TARGET_DIRS (+3 more)
 
 ### Community 8 - "hotel.ts"
-Cohesion: 0.05
-Nodes (66): CCTV_STATUS_LABELS, CCTVChecklist(), CCTVChecklistProps, CCTVPointModal(), CCTVPointModalProps, CATEGORY_CONFIG, FloorDeviceInventory(), FloorDeviceInventoryProps (+58 more)
+Cohesion: 0.07
+Nodes (48): CCTV_STATUS_LABELS, CCTVChecklist(), CCTVChecklistProps, CCTVPointModal(), CCTVPointModalProps, CATEGORY_CONFIG, FloorDeviceInventory(), FloorDeviceInventoryProps (+40 more)
 
 ### Community 9 - "check-sync.mjs"
 Cohesion: 0.13
 Nodes (15): BACKUP, DATA_DIR, DIST, ROOT, DATA_DIR, DIST, healthInfo, ROOT (+7 more)
 
-### Community 10 - "FloorPlanDrawingModal.tsx"
-Cohesion: 0.17
-Nodes (22): LiveCameraModal(), LiveCameraModalProps, drawArrowElement(), drawCctvElement(), drawLanPortElement(), drawMdfRackElement(), drawRectElement(), drawSelectionBox() (+14 more)
+### Community 10 - "FieldEvaluationView.tsx"
+Cohesion: 0.08
+Nodes (42): lucide-react, SimpleOtpModalProps, LiveCameraModal(), LiveCameraModalProps, EvidenceHistoryModal(), EvidenceHistoryModalProps, EvidencePhotoItem, FieldEvaluationView() (+34 more)
 
 ### Community 11 - "live-shots.mjs"
 Cohesion: 0.17
@@ -154,28 +154,28 @@ Cohesion: 0.15
 Nodes (11): args, assetsDir, { building, issues }, chrome, chromeCandidates, generatedAt, htmlPath, outDir (+3 more)
 
 ### Community 19 - "Building"
-Cohesion: 0.10
-Nodes (35): LoginViewProps, SimpleAuthModalProps, CalendarDueDateEvent, CalendarEvent, CalendarLiveEvent, CalendarPresaleEvent, CalendarVisitEvent, formatDateKey() (+27 more)
+Cohesion: 0.18
+Nodes (17): CalendarDueDateEvent, CalendarEvent, CalendarLiveEvent, CalendarPresaleEvent, CalendarVisitEvent, formatDateKey(), MONTH_MAP_ID, MONTH_NAMES_ID (+9 more)
 
 ### Community 20 - "compilerOptions"
 Cohesion: 0.12
 Nodes (16): compilerOptions, allowImportingTsExtensions, erasableSyntaxOnly, lib, module, moduleDetection, noEmit, noFallthroughCasesInSwitch (+8 more)
 
 ### Community 21 - "App.tsx"
-Cohesion: 0.14
-Nodes (20): lucide-react, react, App(), migrateBuildingData(), normalizeUsersList(), SimpleOtpModalProps, BuildingSearchModal(), BuildingSearchModalProps (+12 more)
+Cohesion: 0.16
+Nodes (16): App(), migrateBuildingData(), normalizeUsersList(), BuildingSearchModal(), BuildingSearchModalProps, DeleteBuildingModal(), DeleteBuildingModalProps, getDefaultPermissionsForRole() (+8 more)
 
 ### Community 22 - "ssr-check.tsx"
 Cohesion: 0.11
 Nodes (16): react-dom@^19.2.8, react-dom, customBuilding, customHtml, emptyOutput, hasLoginGate, hasOnboarding, html (+8 more)
 
 ### Community 23 - "LiveDashboardView.tsx"
-Cohesion: 0.23
-Nodes (14): formatShortDate(), LiveDashboardView(), formatIndonesianDate(), getBuildingDueDateInfo(), getDaysRemaining(), ITDueDateInfo, MONTH_MAP_ID, MONTH_NAMES_FULL_ID (+6 more)
+Cohesion: 0.19
+Nodes (16): NewBuildingModal(), NewBuildingModalProps, formatShortDate(), LiveDashboardView(), formatIndonesianDate(), getBuildingDueDateInfo(), getDaysRemaining(), ITDueDateInfo (+8 more)
 
-### Community 24 - "useBackNavigation.ts"
-Cohesion: 0.60
-Nodes (4): HistoryState, isNavState(), NavSnapshot, useBackNavigation()
+### Community 24 - "ColivingIssue"
+Cohesion: 0.14
+Nodes (19): LoginViewProps, SimpleAuthModalProps, LiveDashboardViewProps, ResolveIssueModal(), SimpleIssueTracker(), SimpleIssueTrackerProps, Props, Props (+11 more)
 
 ### Community 25 - "app-shots.tsx"
 Cohesion: 0.17
@@ -199,16 +199,16 @@ Nodes (3): config, @capacitor/cli@^8.6.0, @capacitor/cli
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `react` connect `App.tsx` to `PreOpeningView.tsx`, `useServerSync.ts`, `FieldEvaluationView.tsx`, `scoring.ts`, `storage.ts`, `hotel.ts`, `FloorPlanDrawingModal.tsx`, `package.json`, `dependencies`, `report-ssr.tsx`, `Building`, `ssr-check.tsx`, `LiveDashboardView.tsx`, `useBackNavigation.ts`, `app-shots.tsx`?**
+- **Why does `react` connect `PreOpeningView.tsx` to `useServerSync.ts`, `FieldEvaluationView.tsx`, `scoring.ts`, `storage.ts`, `hotel.ts`, `FieldEvaluationView.tsx`, `package.json`, `dependencies`, `report-ssr.tsx`, `Building`, `App.tsx`, `ssr-check.tsx`, `LiveDashboardView.tsx`, `ColivingIssue`, `app-shots.tsx`?**
   _High betweenness centrality (0.188) - this node is a cross-community bridge._
 - **Are the 3 inferred relationships involving `App()` (e.g. with `app-shots.tsx` and `ssr-check.tsx`) actually correct?**
   _`App()` has 3 INFERRED edges - model-reasoned connections that need verification._
 - **Should `PreOpeningView.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.09333333333333334 - nodes in this community are weakly interconnected._
-- **Why does `Building` connect `Building` to `PreOpeningView.tsx`, `useServerSync.ts`, `FieldEvaluationView.tsx`, `scoring.ts`, `hotel.ts`, `FloorPlanDrawingModal.tsx`, `check-crud.ts`, `App.tsx`, `LiveDashboardView.tsx`?**
+  _Cohesion score 0.09466848940533151 - nodes in this community are weakly interconnected._
+- **Why does `Building` connect `Building` to `PreOpeningView.tsx`, `useServerSync.ts`, `FieldEvaluationView.tsx`, `scoring.ts`, `hotel.ts`, `FieldEvaluationView.tsx`, `check-crud.ts`, `App.tsx`, `LiveDashboardView.tsx`, `ColivingIssue`?**
   _High betweenness centrality (0.056) - this node is a cross-community bridge._
 - **Should `FieldEvaluationView.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.07792207792207792 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07683000604960677 - nodes in this community are weakly interconnected._
 - **Why does `scripts` connect `scripts` to `package.json`?**
   _High betweenness centrality (0.042) - this node is a cross-community bridge._
 - **Should `serve.py` be split into smaller, more focused modules?**
