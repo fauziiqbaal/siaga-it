@@ -256,9 +256,6 @@ export const DeleteBuildingModal: React.FC<DeleteBuildingModalProps> = ({
                     autoFocus
                   />
                 </div>
-                <span className="text-[10px] text-muted-foreground block mt-1">
-                  PIN akun Backoffice Anda ({currentUser.username}): <strong>{currentUser.pin}</strong>
-                </span>
               </div>
             </div>
 

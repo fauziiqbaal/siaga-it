@@ -199,8 +199,8 @@
     "semantic_hash": ""
   },
   "src/components/auth/SimpleAuthModal.tsx": {
-    "mtime": 1794194398.639334,
-    "seen": 1794194446.4830768,
+    "mtime": 1794194493.5616586,
+    "seen": 1794194562.1108027,
     "ast_hash": "602fb2c80ec0b83ea39954ab56e88b62",
     "semantic_hash": ""
   },
@@ -217,10 +217,10 @@
     "semantic_hash": "0681f6b1a8f06559198eb9eb2cd27e5d"
   },
   "src/components/building/DeleteBuildingModal.tsx": {
-    "mtime": 1793949939.2590249,
-    "seen": 1794032456.2235575,
-    "ast_hash": "a2ea7941917d930fc1841f3f992df583",
-    "semantic_hash": "a2ea7941917d930fc1841f3f992df583"
+    "mtime": 1794194513.262275,
+    "seen": 1794194562.1108027,
+    "ast_hash": "889ba06570e6fa5a0fc8c45ebf9565a9",
+    "semantic_hash": ""
   },
   "src/components/building/NewBuildingModal.tsx": {
     "mtime": 1792497940.369137,
@@ -949,8 +949,8 @@
     "semantic_hash": ""
   },
   "src/components/auth/LoginView.tsx": {
-    "mtime": 1794194407.7345438,
-    "seen": 1794194446.4830768,
+    "mtime": 1794194493.4835892,
+    "seen": 1794194562.1108027,
     "ast_hash": "5db2b985b3f3245a3f2c7e33b944010c",
     "semantic_hash": ""
   },
