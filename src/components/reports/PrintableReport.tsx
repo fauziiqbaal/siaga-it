@@ -491,8 +491,28 @@ export const PrintableReport: React.FC<Props> = ({ building, issues, generatedAt
               <td className="border border-border px-1 py-0.5">{issue.category}</td>
               <td className="border border-border px-1 py-0.5">{issue.location}</td>
               <td className="border border-border px-1 py-0.5">
-                {issue.issue}
-                {issue.resolutionNote ? ` — Perbaikan: ${issue.resolutionNote}` : ''}
+                <div>{issue.issue}</div>
+                {issue.photoUrl && (
+                  <div className="mt-1 flex items-center gap-1.5">
+                    <img
+                      src={issue.photoUrl}
+                      alt="Foto kendala"
+                      className="h-12 w-16 rounded border border-slate-300 object-cover bg-slate-50"
+                    />
+                    <span className="text-[6.5pt] font-mono text-rose-600">Foto kendala</span>
+                  </div>
+                )}
+                {issue.resolutionNote ? <div className="mt-0.5 text-slate-800 font-medium">Perbaikan: {issue.resolutionNote}</div> : null}
+                {issue.resolutionPhotoUrl && (
+                  <div className="mt-1 flex items-center gap-1.5">
+                    <img
+                      src={issue.resolutionPhotoUrl}
+                      alt="Foto perbaikan"
+                      className="h-12 w-16 rounded border border-slate-300 object-cover bg-slate-50"
+                    />
+                    <span className="text-[6.5pt] font-mono text-emerald-700">Foto perbaikan</span>
+                  </div>
+                )}
               </td>
               <td className="border border-border px-1 py-0.5">{issue.status === 'OPEN' ? 'OPEN' : 'SELESAI'}</td>
             </tr>

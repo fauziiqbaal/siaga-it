@@ -1,4 +1,4 @@
-﻿import { Building, EvidenceCategory, EvidenceMedia } from '../types/hotel';
+import { Building, EvidenceCategory, EvidenceMedia } from '../types/hotel';
 
 // IndexedDB configuration
 const DB_NAME = 'SiagaIT_EvidenceDB';
@@ -110,6 +110,8 @@ export function generateEvidencePath(
   return { fileName, folderPath };
 }
 
+const API_BASE = (import.meta.env.VITE_API_BASE ?? '').replace(/\/+$/, '');
+
 // Convert File/Blob to Base64
 export function fileToBase64(file: File | Blob): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -120,14 +122,125 @@ export function fileToBase64(file: File | Blob): Promise<string> {
   });
 }
 
-// Save Evidence into IndexedDB (with LocalStorage fallback)
+/**
+ * Kompresi gambar di browser sebelum upload/simpan:
+ * Me-resize gambar hingga max 1280px dan kompresi JPEG 0.8
+ * Mengurangi ukuran dari 4-8 MB menjadi ~100-200 KB tanpa kehilangan detail dokumen!
+ */
+export async function compressImage(file: File | Blob, maxWidth = 1280, quality = 0.8): Promise<string> {
+  return new Promise((resolve) => {
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
+      void fileToBase64(file).then(resolve);
+      return;
+    }
+    if (file.type && !file.type.startsWith('image/')) {
+      void fileToBase64(file).then(resolve);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+        if (width > maxWidth || height > maxWidth) {
+          if (width > height) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          } else {
+            width = Math.round((width * maxWidth) / height);
+            height = maxWidth;
+          }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          resolve(e.target?.result as string);
+          return;
+        }
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = () => resolve(e.target?.result as string);
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = () => resolve('');
+    reader.readAsDataURL(file);
+  });
+}
+
+/**
+ * Upload gambar Base64 ke server `serve.py` (tersimpan fisik di folder `data/uploads/`).
+ * Mengembalikan path relatif misal `/api/uploads/img_xxx.jpg` yang bisa dibuka semua user.
+ */
+export async function uploadImageToServer(base64Data: string, fileName: string): Promise<string | null> {
+  if (typeof fetch !== 'function' || !base64Data) return null;
+  try {
+    const res = await fetch(`${API_BASE}/api/upload`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: base64Data, fileName }),
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json?.ok && json.url ? (json.url as string) : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Tarik daftar bukti dari server untuk sinkronisasi antar perangkat. */
+export async function pullEvidenceFromServer(): Promise<EvidenceMedia[]> {
+  if (typeof fetch !== 'function') return [];
+  try {
+    const res = await fetch(`${API_BASE}/api/evidence`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data?.evidence) ? data.evidence : [];
+  } catch {
+    return [];
+  }
+}
+
+/** Kirim bukti ke server. */
+export async function pushEvidenceToServer(items: EvidenceMedia[]): Promise<boolean> {
+  if (typeof fetch !== 'function' || items.length === 0) return false;
+  try {
+    const res = await fetch(`${API_BASE}/api/evidence`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ evidence: items }),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+// Save Evidence into IndexedDB (with LocalStorage fallback) & Upload to Server
 export async function saveEvidenceItem(item: EvidenceMedia): Promise<void> {
+  let finalItem = { ...item };
+
+  // Jika fileUrl masih base64, coba upload langsung ke server
+  if (finalItem.fileUrl && finalItem.fileUrl.startsWith('data:')) {
+    try {
+      const serverUrl = await uploadImageToServer(finalItem.fileUrl, finalItem.fileName);
+      if (serverUrl) {
+        finalItem.fileUrl = serverUrl;
+      }
+    } catch (uploadErr) {
+      console.warn('Gagal upload langsung ke server, simpan offline lokal:', uploadErr);
+    }
+  }
+
   try {
     const db = await openDB();
-    return new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       const tx = db.transaction(STORE_NAME, 'readwrite');
       const store = tx.objectStore(STORE_NAME);
-      const req = store.put(item);
+      const req = store.put(finalItem);
       req.onsuccess = () => resolve();
       req.onerror = () => reject(req.error);
     });
@@ -135,13 +248,16 @@ export async function saveEvidenceItem(item: EvidenceMedia): Promise<void> {
     console.warn('IndexedDB unavailable, fallback to localStorage', err);
     try {
       const current = JSON.parse(localStorage.getItem('siaga_it_evidence') || '[]');
-      const filtered = current.filter((i: EvidenceMedia) => i.id !== item.id);
-      filtered.push(item);
+      const filtered = current.filter((i: EvidenceMedia) => i.id !== finalItem.id);
+      filtered.push(finalItem);
       localStorage.setItem('siaga_it_evidence', JSON.stringify(filtered));
     } catch (lsErr) {
       console.error('LocalStorage write failed:', lsErr);
     }
   }
+
+  // Kirim metadata bukti ke server agar HP/laptop lain mengenali item ini
+  void pushEvidenceToServer([finalItem]);
 }
 
 // Get Evidence for specific Entity (Room, Device, CCTV, Facility)
@@ -162,11 +278,12 @@ export async function getEvidenceByEntity(entityId: string): Promise<EvidenceMed
   }
 }
 
-// Get Evidence for Building
+// Get Evidence for Building (Menggabungkan IndexedDB lokal & Server uploads)
 export async function getEvidenceByBuilding(buildingId: string): Promise<EvidenceMedia[]> {
+  let localItems: EvidenceMedia[] = [];
   try {
     const db = await openDB();
-    return new Promise((resolve, reject) => {
+    localItems = await new Promise<EvidenceMedia[]>((resolve, reject) => {
       const tx = db.transaction(STORE_NAME, 'readonly');
       const store = tx.objectStore(STORE_NAME);
       const index = store.index('buildingId');
@@ -175,9 +292,39 @@ export async function getEvidenceByBuilding(buildingId: string): Promise<Evidenc
       req.onerror = () => reject(req.error);
     });
   } catch {
-    const current: EvidenceMedia[] = JSON.parse(localStorage.getItem('siaga_it_evidence') || '[]');
-    return current.filter(i => i.buildingId === buildingId);
+    try {
+      const current: EvidenceMedia[] = JSON.parse(localStorage.getItem('siaga_it_evidence') || '[]');
+      localItems = current.filter(i => i.buildingId === buildingId);
+    } catch {
+      localItems = [];
+    }
   }
+
+  // Tarik bukti dari server untuk melengkapi foto yang diunggah teknisi/perangkat lain
+  try {
+    const serverItems = await pullEvidenceFromServer();
+    const serverForBuilding = serverItems.filter(i => i.buildingId === buildingId);
+    if (serverForBuilding.length > 0) {
+      const map = new Map<string, EvidenceMedia>();
+      for (const item of localItems) map.set(item.id, item);
+      for (const item of serverForBuilding) {
+        if (!map.has(item.id)) {
+          map.set(item.id, item);
+        } else {
+          // Jika server punya URL file server sementara lokal masih base64, pakai URL server
+          const existing = map.get(item.id)!;
+          if (item.fileUrl && !item.fileUrl.startsWith('data:') && existing.fileUrl.startsWith('data:')) {
+            map.set(item.id, { ...existing, fileUrl: item.fileUrl });
+          }
+        }
+      }
+      return Array.from(map.values());
+    }
+  } catch {
+    // Offline / server tidak tersedia: tetap pakai data lokal
+  }
+
+  return localItems;
 }
 
 // Delete Evidence Item

@@ -1,4 +1,4 @@
-import type { Building, ColivingIssue } from '../types/hotel';
+import type { Building, ColivingIssue, SimpleUser } from '../types/hotel';
 
 /**
  * Sinkronisasi JSON antar perangkat (opsional).
@@ -21,6 +21,7 @@ export interface SyncSnapshot {
   savedAt?: string;
   buildings: Building[];
   issues: ColivingIssue[];
+  users?: SimpleUser[];
 }
 
 export type SyncState = 'checking' | 'offline' | 'synced' | 'saving' | 'error' | 'conflict';
@@ -198,5 +199,40 @@ export async function deleteBuildingRemote(
     return { ok: response.ok, status: response.status };
   } catch {
     return { ok: false, status: 0 };
+  }
+}
+
+/** Simpan seluruh daftar user ke server agar tersinkron ke handphone/perangkat lain. */
+export async function pushUsers(users: SimpleUser[]): Promise<{ ok: boolean; status: number }> {
+  if (typeof fetch !== 'function') return { ok: false, status: 0 };
+  try {
+    const response = await fetchWithTimeout(
+      apiUrl('/api/users'),
+      {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ users }),
+      },
+      PUSH_TIMEOUT,
+    );
+    return { ok: response.ok, status: response.status };
+  } catch {
+    return { ok: false, status: 0 };
+  }
+}
+
+/** Tarik daftar user terbaru dari server. */
+export async function pullUsers(): Promise<{ ok: boolean; users: SimpleUser[] | null }> {
+  if (typeof fetch !== 'function') return { ok: false, users: null };
+  try {
+    const response = await fetchWithTimeout(apiUrl('/api/users'));
+    if (!response.ok) return { ok: false, users: null };
+    const data = await response.json();
+    if (data?.ok && Array.isArray(data.users)) {
+      return { ok: true, users: data.users };
+    }
+    return { ok: false, users: null };
+  } catch {
+    return { ok: false, users: null };
   }
 }

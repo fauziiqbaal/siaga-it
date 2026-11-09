@@ -38,9 +38,11 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DIST_DIR = os.path.join(BASE_DIR, "dist")
 DATA_DIR = os.environ.get("DATA_DIR", os.path.join(BASE_DIR, "data"))
 DATA_FILE = os.path.join(DATA_DIR, "siaga-it.json")
+UPLOADS_DIR = os.path.join(DATA_DIR, "uploads")
+os.makedirs(UPLOADS_DIR, exist_ok=True)
 PORT = int(os.environ.get("PORT", 5173))
 API_PORT = int(os.environ.get("API_PORT", 8790))
-MAX_BODY = 8 * 1024 * 1024  # 8 MB, cukup untuk seluruh QC satu properti
+MAX_BODY = 15 * 1024 * 1024  # 15 MB, cukup untuk upload foto resolusi tinggi
 SYNC_VERSION = 3  # v3: gedung punya `rev` + endpoint simpan/hapus per gedung
 _STATE_LOCK = threading.Lock()  # read-modify-write harus serial antar request
 
@@ -65,12 +67,22 @@ def read_state():
 
 def write_state(payload: dict):
     os.makedirs(DATA_DIR, exist_ok=True)
+    state = read_state() or {}
+    users = payload.get("users")
+    if users is None:
+        users = state.get("users") or []
+    evidence = payload.get("evidence")
+    if evidence is None:
+        evidence = state.get("evidence") or []
+
     snapshot = {
         "app": "siaga-it",
         "version": SYNC_VERSION,
         "savedAt": now_iso(),
         "buildings": payload.get("buildings") or [],
         "issues": payload.get("issues") or [],
+        "users": users,
+        "evidence": evidence,
     }
     handle, temp_path = tempfile.mkstemp(dir=DATA_DIR, suffix=".tmp")
     with os.fdopen(handle, "w", encoding="utf-8") as temp:
@@ -89,11 +101,13 @@ def write_state(payload: dict):
 
 
 def _state_parts():
-    """Gedung & kendala dari disk (selalu list of dict, aman dari payload rusak)."""
+    """Gedung, kendala, user & bukti dari disk (selalu list of dict, aman dari payload rusak)."""
     state = read_state() or {}
     buildings = [b for b in (state.get("buildings") or []) if isinstance(b, dict) and b.get("id")]
     issues = [i for i in (state.get("issues") or []) if isinstance(i, dict)]
-    return state, buildings, issues
+    users = [u for u in (state.get("users") or []) if isinstance(u, dict) and u.get("id")]
+    evidence = [e for e in (state.get("evidence") or []) if isinstance(e, dict) and e.get("id")]
+    return state, buildings, issues, users, evidence
 
 
 def _rev_of(item) -> int:
@@ -115,7 +129,7 @@ def upsert_building(building_id, building, issues, base_rev, force=False):
     server — klien lalu memutuskan sendiri (menimpa dengan `force` atau tarik).
     """
     with _STATE_LOCK:
-        state, buildings, all_issues = _state_parts()
+        state, buildings, all_issues, *_ = _state_parts()
         existing = next((b for b in buildings if b.get("id") == building_id), None)
         current_rev = _rev_of(existing)
 
@@ -159,7 +173,7 @@ def upsert_building(building_id, building, issues, base_rev, force=False):
 def delete_building(building_id, force=False, base_rev=None):
     """Hapus satu gedung + kendalanya. Gedung lain tidak tersentuh."""
     with _STATE_LOCK:
-        state, buildings, all_issues = _state_parts()
+        state, buildings, all_issues, *_ = _state_parts()
         existing = next((b for b in buildings if b.get("id") == building_id), None)
         if existing is None:
             return 200, {"ok": True, "deleted": False, "savedAt": state.get("savedAt")}
@@ -192,15 +206,10 @@ def delete_building(building_id, force=False, base_rev=None):
 def merge_state(payload: dict):
     """
     Gabung snapshot utuh per id gedung (dipakai backup/klien lama & curl).
-
-    Aturan: gedung yang dikirim hanya menimpa kalau revisinya lebih baru (atau
-    klien tidak mengirim `rev` sama sekali). Server TIDAK menghapus gedung yang
-    tidak ada di payload — penghapusan harus lewat DELETE /api/buildings/{id},
-    supaya satu klien dengan data basi tidak memusnahkan properti teknisi lain.
     """
     force = payload.get("force") is True
     with _STATE_LOCK:
-        _, buildings, all_issues = _state_parts()
+        _, buildings, all_issues, existing_users, existing_evidence = _state_parts()
 
         by_id = {b.get("id"): b for b in buildings}
         for incoming in payload.get("buildings") or []:
@@ -228,8 +237,33 @@ def merge_state(payload: dict):
             if isinstance(incoming, dict) and incoming.get("id"):
                 issues_by_id[incoming["id"]] = incoming
 
+        incoming_users = payload.get("users")
+        if isinstance(incoming_users, list):
+            users_by_id = {u.get("id"): u for u in existing_users if u.get("id")}
+            for u in incoming_users:
+                if isinstance(u, dict) and u.get("id"):
+                    users_by_id[u["id"]] = u
+            final_users = list(users_by_id.values())
+        else:
+            final_users = existing_users
+
+        incoming_evidence = payload.get("evidence")
+        if isinstance(incoming_evidence, list):
+            evidence_by_id = {e.get("id"): e for e in existing_evidence if e.get("id")}
+            for e in incoming_evidence:
+                if isinstance(e, dict) and e.get("id"):
+                    evidence_by_id[e["id"]] = e
+            final_evidence = list(evidence_by_id.values())
+        else:
+            final_evidence = existing_evidence
+
         snapshot = write_state(
-            {"buildings": list(by_id.values()), "issues": list(issues_by_id.values())}
+            {
+                "buildings": list(by_id.values()),
+                "issues": list(issues_by_id.values()),
+                "users": final_users,
+                "evidence": final_evidence,
+            }
         )
         return {
             "ok": True,
@@ -237,6 +271,50 @@ def merge_state(payload: dict):
             "savedAt": snapshot["savedAt"],
             "buildings": len(snapshot["buildings"]),
             "issues": len(snapshot["issues"]),
+            "users": len(snapshot["users"]),
+            "evidence": len(snapshot["evidence"]),
+        }
+
+
+def set_users(incoming_users):
+    """Simpan daftar user ke disk agar tersinkron ke semua perangkat."""
+    with _STATE_LOCK:
+        _, buildings, all_issues, _, existing_evidence = _state_parts()
+        snapshot = write_state(
+            {
+                "buildings": buildings,
+                "issues": all_issues,
+                "users": [u for u in incoming_users if isinstance(u, dict) and u.get("id")],
+                "evidence": existing_evidence,
+            }
+        )
+        return 200, {
+            "ok": True,
+            "users": len(snapshot["users"]),
+            "savedAt": snapshot["savedAt"],
+        }
+
+
+def merge_evidence(incoming_evidence):
+    """Simpan & gabung metadata bukti foto ke disk agar tersinkron ke semua perangkat."""
+    with _STATE_LOCK:
+        _, buildings, all_issues, existing_users, existing_evidence = _state_parts()
+        by_id = {e.get("id"): e for e in existing_evidence if e.get("id")}
+        for e in incoming_evidence:
+            if isinstance(e, dict) and e.get("id"):
+                by_id[e["id"]] = e
+        snapshot = write_state(
+            {
+                "buildings": buildings,
+                "issues": all_issues,
+                "users": existing_users,
+                "evidence": list(by_id.values()),
+            }
+        )
+        return 200, {
+            "ok": True,
+            "evidence": len(snapshot["evidence"]),
+            "savedAt": snapshot["savedAt"],
         }
 
 
@@ -408,6 +486,7 @@ class SiagaHandler(SimpleHTTPRequestHandler):
                     "updatedAt": state.get("savedAt"),
                     "buildings": len(state.get("buildings") or []),
                     "issues": len(state.get("issues") or []),
+                    "users": len(state.get("users") or []),
                     # Versi protokol sinkron: klien lama/Server lama bisa dideteksi.
                     "syncVersion": SYNC_VERSION,
                 },
@@ -415,6 +494,37 @@ class SiagaHandler(SimpleHTTPRequestHandler):
 
         if path == "/api/wifi":
             return self._json(200, read_wifi_signal())
+
+        if path.startswith("/api/uploads/"):
+            rel_name = unquote(path[len("/api/uploads/"):])
+            clean_name = os.path.basename(rel_name)
+            file_path = os.path.join(UPLOADS_DIR, clean_name)
+            if os.path.exists(file_path) and os.path.isfile(file_path):
+                mime = "image/jpeg"
+                lower = clean_name.lower()
+                if lower.endswith(".png"): mime = "image/png"
+                elif lower.endswith(".webp"): mime = "image/webp"
+                elif lower.endswith(".svg"): mime = "image/svg+xml"
+                elif lower.endswith(".pdf"): mime = "application/pdf"
+                with open(file_path, "rb") as f:
+                    content = f.read()
+                self.send_response(200)
+                self.send_header("Content-Type", mime)
+                self.send_header("Content-Length", str(len(content)))
+                self.send_header("Cache-Control", "public, max-age=86400")
+                self._cors()
+                self.end_headers()
+                self.wfile.write(content)
+                return
+            return self._json(404, {"ok": False, "error": "File tidak ditemukan"})
+
+        if path == "/api/evidence":
+            _, _, _, _, evidence = _state_parts()
+            return self._json(200, {"ok": True, "evidence": evidence})
+
+        if path == "/api/users":
+            _, _, _, users, _ = _state_parts()
+            return self._json(200, {"ok": True, "users": users})
 
         if path == "/api/state":
             state = read_state()
@@ -434,6 +544,13 @@ class SiagaHandler(SimpleHTTPRequestHandler):
         if not isinstance(payload, dict) or not isinstance(payload.get("buildings"), list):
             return self._json(400, {"ok": False, "error": "Payload harus { buildings: [] }"})
         return self._json(200, merge_state(payload))
+
+    def _save_users(self):
+        payload = self._read_body()
+        if not isinstance(payload, dict) or not isinstance(payload.get("users"), list):
+            return self._json(400, {"ok": False, "error": "Payload harus { users: [] }"})
+        status, body = set_users(payload["users"])
+        return self._json(status, body)
 
     def _save_building(self, building_id: str):
         """PUT /api/buildings/{id} -> tulis satu gedung saja (409 kalau revisi basi)."""
@@ -473,6 +590,16 @@ class SiagaHandler(SimpleHTTPRequestHandler):
         if path == "/api/state":
             return self._save_state()
 
+        if path == "/api/users":
+            return self._save_users()
+
+        if path == "/api/evidence":
+            payload = self._read_body()
+            if not isinstance(payload, dict) or not isinstance(payload.get("evidence"), list):
+                return self._json(400, {"ok": False, "error": "Payload harus { evidence: [] }"})
+            status, body = merge_evidence(payload["evidence"])
+            return self._json(status, body)
+
         if path.startswith("/api/buildings/"):
             return self._save_building(unquote(path[len("/api/buildings/"):]))
 
@@ -490,8 +617,59 @@ class SiagaHandler(SimpleHTTPRequestHandler):
         return self._json(404, {"ok": False, "error": "Endpoint tidak ada"})
 
     def do_POST(self):
-        if urlparse(self.path).path == "/api/state":
+        parsed = urlparse(self.path)
+        path = parsed.path
+
+        if path == "/api/state":
             return self._save_state()
+        if path == "/api/users":
+            return self._save_users()
+        if path == "/api/evidence":
+            payload = self._read_body()
+            if not isinstance(payload, dict) or not isinstance(payload.get("evidence"), list):
+                return self._json(400, {"ok": False, "error": "Payload harus { evidence: [] }"})
+            status, body = merge_evidence(payload["evidence"])
+            return self._json(status, body)
+
+        if path == "/api/upload":
+            payload = self._read_body()
+            if not isinstance(payload, dict) or not payload.get("data"):
+                return self._json(400, {"ok": False, "error": "Payload harus { data: 'data:image/...;base64,...', fileName: '...' }"})
+            raw_data = str(payload.get("data", ""))
+            file_name = str(payload.get("fileName") or f"img_{int(datetime.now().timestamp()*1000)}.jpg")
+            clean_name = os.path.basename(file_name)
+            clean_name = "".join(c for c in clean_name if c.isalnum() or c in "._-")
+            if not clean_name:
+                clean_name = f"img_{int(datetime.now().timestamp()*1000)}.jpg"
+            if "," in raw_data:
+                raw_data = raw_data.split(",", 1)[1]
+            try:
+                import base64
+                binary_data = base64.b64decode(raw_data)
+            except Exception as e:
+                return self._json(400, {"ok": False, "error": f"Gagal decode base64: {str(e)}"})
+            prefix, ext = os.path.splitext(clean_name)
+            if not ext:
+                ext = ".jpg"
+            counter = 1
+            test_name = clean_name
+            while os.path.exists(os.path.join(UPLOADS_DIR, test_name)):
+                test_name = f"{prefix}_{int(datetime.now().timestamp()*1000)}_{counter}{ext}"
+                counter += 1
+            clean_name = test_name
+            save_path = os.path.join(UPLOADS_DIR, clean_name)
+            try:
+                with open(save_path, "wb") as f:
+                    f.write(binary_data)
+            except Exception as e:
+                return self._json(500, {"ok": False, "error": f"Gagal simpan file: {str(e)}"})
+            return self._json(200, {
+                "ok": True,
+                "url": f"/api/uploads/{clean_name}",
+                "fileName": clean_name,
+                "sizeBytes": len(binary_data)
+            })
+
         return self._json(404, {"ok": False, "error": "Endpoint tidak ada"})
 
 

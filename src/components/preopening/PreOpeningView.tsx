@@ -29,6 +29,8 @@ import { LiveCameraModal } from '../common/LiveCameraModal';
 import {
   deleteEvidenceItem,
   fileToBase64,
+  compressImage,
+  uploadImageToServer,
   generateEvidencePath,
   getBuildingSlug,
   getEvidenceByBuilding,
@@ -159,6 +161,11 @@ export const PreOpeningView: React.FC<Props> = ({
       const entityName = deviceDraft.name.trim() || 'Perangkat IT';
       const extension = file.name.includes('.') ? file.name.split('.').pop() || 'jpg' : 'jpg';
       const { fileName, folderPath } = generateEvidencePath(building, 'DEVICE_ASSET', entityName, extension);
+      
+      const compressed = await compressImage(file);
+      const serverUrl = await uploadImageToServer(compressed, fileName);
+      const finalUrl = serverUrl || compressed;
+
       await saveEvidenceItem({
         id: uid('evd'),
         buildingId: building.id,
@@ -167,12 +174,21 @@ export const PreOpeningView: React.FC<Props> = ({
         entityName,
         category: 'DEVICE_ASSET',
         mediaType: 'image',
-        fileUrl: await fileToBase64(file),
+        fileUrl: finalUrl,
         fileName,
         folderPath,
         originalName: file.name,
-        sizeBytes: file.size,
+        sizeBytes: finalUrl.startsWith('data:') ? Math.round(finalUrl.length * 0.75) : file.size,
         capturedAt: new Date().toISOString(),
+      });
+
+      const updatedDraft = { ...deviceDraft, photoUrl: finalUrl };
+      setDeviceDraft(updatedDraft);
+      const exists = (building.devices || []).some((item) => item.id === deviceDraft.id);
+      update({
+        devices: exists
+          ? (building.devices || []).map((item) => (item.id === deviceDraft.id ? updatedDraft : item))
+          : [updatedDraft, ...(building.devices || [])],
       });
       await reloadAssetPhotos();
     } catch (error) {

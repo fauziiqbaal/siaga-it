@@ -19,7 +19,7 @@ import {
   Sparkles,
   FileText
 } from 'lucide-react';
-import { fileToBase64 } from '../../utils/evidenceStorage';
+import { fileToBase64, compressImage, uploadImageToServer } from '../../utils/evidenceStorage';
 import { LiveCameraModal } from '../common/LiveCameraModal';
 
 export interface IssueModalTarget {
@@ -138,7 +138,7 @@ export const IssueActionModal: React.FC<IssueActionModalProps> = ({
     if (!file) return;
 
     try {
-      const base64 = await fileToBase64(file);
+      const compressed = await compressImage(file);
       const now = new Date();
       const timeStr = now.toLocaleDateString('id-ID', {
         day: 'numeric',
@@ -151,7 +151,10 @@ export const IssueActionModal: React.FC<IssueActionModalProps> = ({
       const cleanTitle = target.title.replace(/[^a-zA-Z0-9]/g, '_');
       const genName = `${tag}_${cleanTitle}_${target.pillar}_${now.getTime().toString().slice(-6)}.jpg`;
 
-      setPhotoPreview(base64);
+      const serverUrl = await uploadImageToServer(compressed, genName);
+      const finalUrl = serverUrl || compressed;
+
+      setPhotoPreview(finalUrl);
       setPhotoTimestamp(timeStr);
       setPhotoFileName(genName);
     } catch (err) {
@@ -161,7 +164,7 @@ export const IssueActionModal: React.FC<IssueActionModalProps> = ({
   };
 
   // Handle Photo Capture from Live Camera Viewfinder
-  const handleLivePhotoCapture = (dataUrl: string, _file: File) => {
+  const handleLivePhotoCapture = async (dataUrl: string, _file: File) => {
     const now = new Date();
     const timeStr = now.toLocaleDateString('id-ID', {
       day: 'numeric',
@@ -174,10 +177,18 @@ export const IssueActionModal: React.FC<IssueActionModalProps> = ({
     const cleanTitle = target.title.replace(/[^a-zA-Z0-9]/g, '_');
     const genName = `${tag}_${cleanTitle}_${target.pillar}_${now.getTime().toString().slice(-6)}.jpg`;
 
-    setPhotoPreview(dataUrl);
-    setPhotoTimestamp(timeStr);
-    setPhotoFileName(genName);
     setIsLiveCameraOpen(false);
+    try {
+      const serverUrl = await uploadImageToServer(dataUrl, genName);
+      const finalUrl = serverUrl || dataUrl;
+      setPhotoPreview(finalUrl);
+      setPhotoTimestamp(timeStr);
+      setPhotoFileName(genName);
+    } catch {
+      setPhotoPreview(dataUrl);
+      setPhotoTimestamp(timeStr);
+      setPhotoFileName(genName);
+    }
   };
 
   // Submit Report

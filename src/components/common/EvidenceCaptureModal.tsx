@@ -22,6 +22,7 @@ import {
 import { 
   generateEvidencePath, 
   fileToBase64, 
+  compressImage,
   saveEvidenceItem, 
   getEvidenceByEntity, 
   deleteEvidenceItem, 
@@ -118,7 +119,7 @@ export const EvidenceCaptureModal: React.FC<EvidenceCaptureModalProps> = ({
     if (!files || files.length === 0) return;
 
     const file = files[0];
-    const base64 = await fileToBase64(file);
+    const base64 = isVideo ? await fileToBase64(file) : await compressImage(file);
     const ext = file.name.split('.').pop() || (isVideo ? 'mp4' : 'jpg');
 
     const { fileName, folderPath } = generateEvidencePath(building, category, entityName, ext);

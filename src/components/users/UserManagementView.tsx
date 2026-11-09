@@ -193,7 +193,7 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({
       const existing = users.find((u) => u.id === editingUserId);
       const isMasterAdmin = existing?.username === 'admin';
       const finalRole = isMasterAdmin ? 'ADMIN' : formData.role;
-      const finalPermissions = isMasterAdmin
+      const finalPermissions = isMasterAdmin || formData.role === 'ADMIN'
         ? APP_MODULES.map((m) => m.id)
         : formData.role === 'TEKNISI'
           ? formData.permissions.filter((p) => p !== 'user_management')
@@ -222,9 +222,11 @@ export const UserManagementView: React.FC<UserManagementViewProps> = ({
       }
     } else {
       const finalPermissions =
-        formData.role === 'TEKNISI'
-          ? formData.permissions.filter((p) => p !== 'user_management')
-          : formData.permissions;
+        formData.role === 'ADMIN'
+          ? APP_MODULES.map((m) => m.id)
+          : formData.role === 'TEKNISI'
+            ? formData.permissions.filter((p) => p !== 'user_management')
+            : formData.permissions;
 
       const newUser: SimpleUser = {
         id: `u-${Date.now()}`,

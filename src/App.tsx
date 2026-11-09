@@ -28,6 +28,7 @@ import type { SaveStatus } from './hooks/usePersistentState';
 import { useBackNavigation } from './hooks/useBackNavigation';
 import { useServerSync } from './hooks/useServerSync';
 import type { SyncSnapshot } from './lib/serverSync';
+import { pushUsers, pullUsers } from './lib/serverSync';
 import { checkStorage, downloadJson, getStorageUsage, readJsonFile } from './lib/storage';
 import { suggestPhase } from './utils/scoring';
 import { MapPin, Wifi, Calendar } from 'lucide-react';
@@ -68,14 +69,15 @@ const migrateBuildingData = (list: Building[]): Building[] =>
 
 
 const normalizeUsersList = (list: any[]): SimpleUser[] => {
-  if (!Array.isArray(list) || list.length === 0) return APP_USERS;
-  let fullList = [...list];
+  let fullList = Array.isArray(list) && list.length > 0 ? [...list] : [...APP_USERS];
   if (!fullList.some((u: any) => u.username === 'admin')) {
     fullList.unshift(APP_USERS[0]);
   }
-  const testUser = APP_USERS.find((u) => u.username === 'usertest');
-  if (testUser && !fullList.some((u: any) => u.username === 'usertest')) {
-    fullList.push(testUser);
+  // Pastikan seluruh akun baku (termasuk 12 user tim baru) selalu ada
+  for (const defUser of APP_USERS) {
+    if (!fullList.some((u: any) => (u.username || '').toLowerCase() === defUser.username.toLowerCase())) {
+      fullList.push(defUser);
+    }
   }
 
   return fullList.map((u: any, idx: number) => {
@@ -86,11 +88,11 @@ const normalizeUsersList = (list: any[]): SimpleUser[] => {
         username: 'admin',
         name: u.name || 'Administrator IT',
         role: 'ADMIN' as UserRole,
-        roleTitle: 'Super Administrator',
-        pin: '4569',
+        roleTitle: u.roleTitle || 'Super Administrator',
+        pin: u.pin || '4569',
         isActive: true,
         isBlocked: false,
-        avatarColor: 'bg-indigo-600',
+        avatarColor: u.avatarColor || 'bg-indigo-600',
         permissions: APP_MODULES.map((m) => m.id),
         failedAttempts: 0,
         lockedUntil: null,
@@ -103,28 +105,35 @@ const normalizeUsersList = (list: any[]): SimpleUser[] => {
         username: 'usertest',
         name: u.name || 'Teknisi Uji Lapangan',
         role: 'TEKNISI' as UserRole,
-        roleTitle: 'Teknisi IT Lapangan',
-        pin: '6666',
+        roleTitle: u.roleTitle || 'Teknisi IT Lapangan',
+        pin: u.pin || '6666',
         isActive: true,
         isBlocked: Boolean(u.isBlocked),
-        avatarColor: 'bg-emerald-600',
+        avatarColor: u.avatarColor || 'bg-emerald-600',
         permissions: getDefaultPermissionsForRole('TEKNISI'),
         failedAttempts: typeof u.failedAttempts === 'number' ? u.failedAttempts : 0,
         lockedUntil: u.lockedUntil || null,
       };
     }
-    const defaultUser = APP_USERS.find((au) => au.id === u.id || au.username === u.username);
+    const defaultUser = APP_USERS.find((au) => au.id === u.id || (au.username || '').toLowerCase() === (u.username || '').toLowerCase());
     const fallbackUsername =
       defaultUser?.username ||
       (u.name ? u.name.toLowerCase().replace(/[^a-z0-9]+/g, '.') : `user.${idx + 1}`);
+    const resolvedRole: UserRole = (defaultUser ? defaultUser.role : (u.role || 'TEKNISI')) as UserRole;
+    const resolvedTitle: string = (defaultUser?.roleTitle || u.roleTitle || (resolvedRole === 'ADMIN' ? 'Administrator IT' : resolvedRole === 'BACKOFFICE' ? 'IT Ops Backoffice' : 'Teknisi Siaga'));
     const basePerms: AppModuleId[] =
-      u.permissions || defaultUser?.permissions || getDefaultPermissionsForRole(u.role || 'TEKNISI');
+      resolvedRole === 'ADMIN'
+        ? APP_MODULES.map((m) => m.id)
+        : defaultUser
+          ? defaultUser.permissions
+          : u.permissions || getDefaultPermissionsForRole(resolvedRole);
     const updatedPerms: AppModuleId[] = !basePerms.includes('property') ? ['property', ...basePerms] : basePerms;
     return {
       ...u,
-      permissions: updatedPerms,
+      permissions: resolvedRole === 'ADMIN' ? APP_MODULES.map((m) => m.id) : updatedPerms,
       username: u.username || fallbackUsername,
-      role: u.role === 'ADMIN' ? (u.username === 'admin' ? 'ADMIN' : 'BACKOFFICE') : (u.role || 'TEKNISI'),
+      role: resolvedRole,
+      roleTitle: resolvedTitle,
       failedAttempts: typeof u.failedAttempts === 'number' ? u.failedAttempts : 0,
       lockedUntil: u.lockedUntil || null,
       isBlocked: Boolean(u.isBlocked),
@@ -214,19 +223,55 @@ export function App() {
   };
 
   const handleAddUser = (newUser: SimpleUser) => {
-    setUsers(prev => [newUser, ...prev]);
+    setUsers(prev => {
+      const next = [newUser, ...prev];
+      void pushUsers(next);
+      return next;
+    });
   };
 
   const handleUpdateUser = (updatedUser: SimpleUser) => {
-    setUsers(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u));
+    setUsers(prev => {
+      const next = prev.map(u => u.id === updatedUser.id ? updatedUser : u);
+      void pushUsers(next);
+      return next;
+    });
     if (currentUser?.id === updatedUser.id) {
       setCurrentUser(updatedUser);
     }
   };
 
   const handleDeleteUser = (userId: string) => {
-    setUsers(prev => prev.filter(u => u.id !== userId));
+    setUsers(prev => {
+      const next = prev.filter(u => u.id !== userId);
+      void pushUsers(next);
+      return next;
+    });
   };
+
+  // Tarik daftar user terbaru dari server saat aplikasi dimuat atau saat tab kembali aktif agar sinkron lintas perangkat
+  useEffect(() => {
+    let active = true;
+    const fetchUsers = () => {
+      void pullUsers().then((res) => {
+        if (!active || !res.ok || !Array.isArray(res.users) || res.users.length === 0) return;
+        setUsers(() => normalizeUsersList(res.users!));
+      });
+    };
+
+    fetchUsers();
+    window.addEventListener('focus', fetchUsers);
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') fetchUsers();
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      active = false;
+      window.removeEventListener('focus', fetchUsers);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [setUsers]);
 
   // Save users whenever modified
   useEffect(() => {
@@ -345,11 +390,19 @@ export function App() {
     (snapshot: SyncSnapshot) => {
       setBuildings(migrateBuildingData(snapshot.buildings));
       setIssues(snapshot.issues ?? []);
+      if (Array.isArray(snapshot.users) && snapshot.users.length > 0) {
+        setUsers((prev) => {
+          const map = new Map<string, SimpleUser>();
+          for (const u of prev) map.set((u.username || u.id).toLowerCase(), u);
+          for (const u of snapshot.users!) map.set((u.username || u.id).toLowerCase(), u);
+          return normalizeUsersList(Array.from(map.values()));
+        });
+      }
       setActiveBuildingId((prev) =>
         prev && snapshot.buildings.some((b) => b.id === prev) ? prev : snapshot.buildings[0]?.id ?? '',
       );
     },
-    [setActiveBuildingId, setBuildings, setIssues],
+    [setActiveBuildingId, setBuildings, setIssues, setUsers],
   );
 
   // Server menetapkan nomor revisi per gedung; simpan balik supaya refresh

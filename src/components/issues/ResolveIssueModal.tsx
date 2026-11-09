@@ -21,7 +21,7 @@ import {
   FileCheck2,
   Maximize2
 } from 'lucide-react';
-import { fileToBase64, saveEvidenceItem, generateEvidencePath, getBuildingSlug } from '../../utils/evidenceStorage';
+import { fileToBase64, compressImage, uploadImageToServer, saveEvidenceItem, generateEvidencePath, getBuildingSlug } from '../../utils/evidenceStorage';
 import { LiveCameraModal } from '../common/LiveCameraModal';
 import { WifiSpeedtestModal, WifiSpeedtestResult } from '../common/WifiSpeedtestModal';
 
@@ -157,7 +157,10 @@ export const ResolveIssueModal: React.FC<ResolveIssueModalProps> = ({
     const cleanLoc = issue.location.replace(/[^a-zA-Z0-9]/g, '_');
     const fName = `QC_SOLVED_${cleanLoc}_${category}_${now.getTime().toString().slice(-6)}.jpg`;
 
-    setPhotoPreview(dataUrl);
+    const serverUrl = await uploadImageToServer(dataUrl, fName);
+    const finalUrl = serverUrl || dataUrl;
+
+    setPhotoPreview(finalUrl);
     setPhotoTimestamp(timeStr);
     setPhotoFileName(fName);
     setIsLiveCameraOpen(false);
@@ -173,11 +176,11 @@ export const ResolveIssueModal: React.FC<ResolveIssueModalProps> = ({
           buildingSlug: getBuildingSlug(currentBuilding.name),
           category: catMap as any,
           mediaType: 'image',
-          fileUrl: dataUrl,
+          fileUrl: finalUrl,
           fileName: fName,
           folderPath,
           originalName: fName,
-          sizeBytes: Math.round(dataUrl.length * 0.75),
+          sizeBytes: finalUrl.startsWith('data:') ? Math.round(finalUrl.length * 0.75) : 100000,
           capturedAt: new Date().toISOString(),
           entityId: issue.id,
           entityName: issue.location,
@@ -196,7 +199,7 @@ export const ResolveIssueModal: React.FC<ResolveIssueModalProps> = ({
     if (!file) return;
 
     try {
-      const base64 = await fileToBase64(file);
+      const compressed = await compressImage(file);
       const now = new Date();
       const timeStr = now.toLocaleString('id-ID', {
         day: 'numeric',
@@ -209,7 +212,10 @@ export const ResolveIssueModal: React.FC<ResolveIssueModalProps> = ({
       const cleanLoc = issue.location.replace(/[^a-zA-Z0-9]/g, '_');
       const fName = `QC_SOLVED_${cleanLoc}_${category}_${now.getTime().toString().slice(-6)}.jpg`;
 
-      setPhotoPreview(base64);
+      const serverUrl = await uploadImageToServer(compressed, fName);
+      const finalUrl = serverUrl || compressed;
+
+      setPhotoPreview(finalUrl);
       setPhotoTimestamp(timeStr);
       setPhotoFileName(fName);
 
@@ -223,11 +229,11 @@ export const ResolveIssueModal: React.FC<ResolveIssueModalProps> = ({
           buildingSlug: getBuildingSlug(currentBuilding.name),
           category: catMap as any,
           mediaType: 'image',
-          fileUrl: base64,
+          fileUrl: finalUrl,
           fileName: fName,
           folderPath,
           originalName: file.name,
-          sizeBytes: file.size,
+          sizeBytes: finalUrl.startsWith('data:') ? Math.round(finalUrl.length * 0.75) : file.size,
           capturedAt: new Date().toISOString(),
           entityId: issue.id,
           entityName: issue.location,

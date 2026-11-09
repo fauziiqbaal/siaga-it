@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import type { Building, EvidenceMedia } from '../../types/hotel';
 import { Badge, Bar, Btn, Field, Sheet, TextInput } from '../ui/kit';
-import { fileToBase64, generateEvidencePath, saveEvidenceItem } from '../../utils/evidenceStorage';
+import { fileToBase64, compressImage, generateEvidencePath, saveEvidenceItem } from '../../utils/evidenceStorage';
 import { isNativeApp, readNativeWifiSignal } from '../../lib/wifiSignal';
 
 /**
@@ -222,7 +222,7 @@ export const SpeedtestSheet: React.FC<Props> = ({
   const handlePhoto = async (file: File | undefined) => {
     if (!file) return;
     try {
-      const base64 = await fileToBase64(file);
+      const base64 = await compressImage(file);
       setPhotoName(file.name);
       setPhotoData(base64);
     } catch {
