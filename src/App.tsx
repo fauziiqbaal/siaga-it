@@ -69,15 +69,9 @@ const migrateBuildingData = (list: Building[]): Building[] =>
 
 
 const normalizeUsersList = (list: any[]): SimpleUser[] => {
-  let fullList = Array.isArray(list) && list.length > 0 ? [...list] : [...APP_USERS];
+  const fullList = Array.isArray(list) && list.length > 0 ? [...list] : [APP_USERS[0]];
   if (!fullList.some((u: any) => u.username === 'admin')) {
     fullList.unshift(APP_USERS[0]);
-  }
-  // Pastikan seluruh akun baku (termasuk 12 user tim baru) selalu ada
-  for (const defUser of APP_USERS) {
-    if (!fullList.some((u: any) => (u.username || '').toLowerCase() === defUser.username.toLowerCase())) {
-      fullList.push(defUser);
-    }
   }
 
   return fullList.map((u: any, idx: number) => {
@@ -98,35 +92,16 @@ const normalizeUsersList = (list: any[]): SimpleUser[] => {
         lockedUntil: null,
       };
     }
-    if (u.username === 'usertest') {
-      return {
-        ...u,
-        id: u.id || 'u-usertest',
-        username: 'usertest',
-        name: u.name || 'Teknisi Uji Lapangan',
-        role: 'TEKNISI' as UserRole,
-        roleTitle: u.roleTitle || 'Teknisi IT Lapangan',
-        pin: u.pin || '6666',
-        isActive: true,
-        isBlocked: Boolean(u.isBlocked),
-        avatarColor: u.avatarColor || 'bg-emerald-600',
-        permissions: getDefaultPermissionsForRole('TEKNISI'),
-        failedAttempts: typeof u.failedAttempts === 'number' ? u.failedAttempts : 0,
-        lockedUntil: u.lockedUntil || null,
-      };
-    }
     const defaultUser = APP_USERS.find((au) => au.id === u.id || (au.username || '').toLowerCase() === (u.username || '').toLowerCase());
     const fallbackUsername =
       defaultUser?.username ||
       (u.name ? u.name.toLowerCase().replace(/[^a-z0-9]+/g, '.') : `user.${idx + 1}`);
-    const resolvedRole: UserRole = (defaultUser ? defaultUser.role : (u.role || 'TEKNISI')) as UserRole;
-    const resolvedTitle: string = (defaultUser?.roleTitle || u.roleTitle || (resolvedRole === 'ADMIN' ? 'Administrator IT' : resolvedRole === 'BACKOFFICE' ? 'IT Ops Backoffice' : 'Teknisi Siaga'));
+    const resolvedRole: UserRole = (u.role || defaultUser?.role || 'TEKNISI') as UserRole;
+    const resolvedTitle: string = (u.roleTitle || defaultUser?.roleTitle || (resolvedRole === 'ADMIN' ? 'Administrator IT' : resolvedRole === 'BACKOFFICE' ? 'IT Ops Backoffice' : 'Teknisi Siaga'));
     const basePerms: AppModuleId[] =
       resolvedRole === 'ADMIN'
         ? APP_MODULES.map((m) => m.id)
-        : defaultUser
-          ? defaultUser.permissions
-          : u.permissions || getDefaultPermissionsForRole(resolvedRole);
+        : u.permissions || defaultUser?.permissions || getDefaultPermissionsForRole(resolvedRole);
     const updatedPerms: AppModuleId[] = !basePerms.includes('property') ? ['property', ...basePerms] : basePerms;
     return {
       ...u,

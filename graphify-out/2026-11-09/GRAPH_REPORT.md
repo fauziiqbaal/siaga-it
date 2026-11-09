@@ -1,7 +1,7 @@
 # Graph Report - IT Opening  (2026-11-09)
 
 ## Corpus Check
-- 93 files · ~158,839 words
+- 93 files · ~158,484 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 37 file(s) not represented in the graph (top: .css 18, .xml 10, (none) 4)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `4b838931`
+- Built from commit: `b17b523c`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -65,12 +65,12 @@
   scripts/fixtures/sample-property.ts → src/types/hotel.ts
 - `SampleProperty` --references--> `ColivingIssue`  [EXTRACTED]
   scripts/fixtures/sample-property.ts → src/types/hotel.ts
-- `Props` --references--> `Building`  [EXTRACTED]
-  src/components/common/SpeedtestSheet.tsx → src/types/hotel.ts
 - `NewBuildingModalProps` --references--> `Building`  [EXTRACTED]
   src/components/building/NewBuildingModal.tsx → src/types/hotel.ts
 - `EvidenceExplorerModalProps` --references--> `Building`  [EXTRACTED]
   src/components/common/EvidenceExplorerModal.tsx → src/types/hotel.ts
+- `Props` --references--> `Building`  [EXTRACTED]
+  src/components/common/SpeedtestSheet.tsx → src/types/hotel.ts
 
 ## Import Cycles
 - None detected.

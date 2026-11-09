@@ -187,21 +187,21 @@
     "semantic_hash": ""
   },
   "serve.py": {
-    "mtime": 1794193594.412256,
-    "seen": 1794193639.0028749,
+    "mtime": 1794193695.824632,
+    "seen": 1794194446.4830768,
     "ast_hash": "d4b7fd1463ee468306ff20304a22dd6e",
     "semantic_hash": ""
   },
   "src/App.tsx": {
-    "mtime": 1794193583.003171,
-    "seen": 1794193639.0028749,
+    "mtime": 1794193696.210818,
+    "seen": 1794194446.4830768,
     "ast_hash": "a288792b40601880f74d6b6798772a27",
     "semantic_hash": ""
   },
   "src/components/auth/SimpleAuthModal.tsx": {
-    "mtime": 1794192821.9042475,
-    "seen": 1794193321.6966634,
-    "ast_hash": "e9032a949e59ec748baf98d1fd92da7a",
+    "mtime": 1794194493.5616586,
+    "seen": 1794194562.1108027,
+    "ast_hash": "602fb2c80ec0b83ea39954ab56e88b62",
     "semantic_hash": ""
   },
   "src/components/auth/SimpleOtpModal.tsx": {
@@ -217,10 +217,10 @@
     "semantic_hash": "0681f6b1a8f06559198eb9eb2cd27e5d"
   },
   "src/components/building/DeleteBuildingModal.tsx": {
-    "mtime": 1793949939.2590249,
-    "seen": 1794032456.2235575,
-    "ast_hash": "a2ea7941917d930fc1841f3f992df583",
-    "semantic_hash": "a2ea7941917d930fc1841f3f992df583"
+    "mtime": 1794194513.262275,
+    "seen": 1794194562.1108027,
+    "ast_hash": "889ba06570e6fa5a0fc8c45ebf9565a9",
+    "semantic_hash": ""
   },
   "src/components/building/NewBuildingModal.tsx": {
     "mtime": 1792497940.369137,
@@ -247,8 +247,8 @@
     "semantic_hash": "f3e419ca095259318c66187a05cf50cf"
   },
   "src/components/common/EvidenceCaptureModal.tsx": {
-    "mtime": 1794193573.811797,
-    "seen": 1794193639.0028749,
+    "mtime": 1794193696.3245802,
+    "seen": 1794194446.4830768,
     "ast_hash": "957e27b9262496293620eff923c79a3f",
     "semantic_hash": ""
   },
@@ -271,8 +271,8 @@
     "semantic_hash": "c1caf084c57eb429563c2f531c8c8638"
   },
   "src/components/common/SpeedtestSheet.tsx": {
-    "mtime": 1794193561.3312578,
-    "seen": 1794193639.0028749,
+    "mtime": 1794193696.4254835,
+    "seen": 1794194446.4830768,
     "ast_hash": "9e767ce0ca4733206ff25b33cdd6d32a",
     "semantic_hash": ""
   },
@@ -949,9 +949,9 @@
     "semantic_hash": ""
   },
   "src/components/auth/LoginView.tsx": {
-    "mtime": 1794192821.7697866,
-    "seen": 1794193321.6966634,
-    "ast_hash": "87baa43a17f2039ac9e067993606e70e",
+    "mtime": 1794194493.4835892,
+    "seen": 1794194562.1108027,
+    "ast_hash": "5db2b985b3f3245a3f2c7e33b944010c",
     "semantic_hash": ""
   },
   "reports/shots/00-login-gate.html": {

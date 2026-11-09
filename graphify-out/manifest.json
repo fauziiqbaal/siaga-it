@@ -193,9 +193,9 @@
     "semantic_hash": ""
   },
   "src/App.tsx": {
-    "mtime": 1794193696.210818,
-    "seen": 1794194446.4830768,
-    "ast_hash": "a288792b40601880f74d6b6798772a27",
+    "mtime": 1794194747.2758353,
+    "seen": 1794194820.3240845,
+    "ast_hash": "b1e64b2c7269cf7895f5527f1b95fbb3",
     "semantic_hash": ""
   },
   "src/components/auth/SimpleAuthModal.tsx": {
@@ -217,8 +217,8 @@
     "semantic_hash": "0681f6b1a8f06559198eb9eb2cd27e5d"
   },
   "src/components/building/DeleteBuildingModal.tsx": {
-    "mtime": 1794194513.262275,
-    "seen": 1794194562.1108027,
+    "mtime": 1794194687.4187286,
+    "seen": 1794194820.3240845,
     "ast_hash": "889ba06570e6fa5a0fc8c45ebf9565a9",
     "semantic_hash": ""
   },
@@ -433,9 +433,9 @@
     "semantic_hash": ""
   },
   "src/data/mockData.ts": {
-    "mtime": 1794192822.093188,
-    "seen": 1794193321.6966634,
-    "ast_hash": "8d5ea9c6b30f4179c6f0fefac79b82c0",
+    "mtime": 1794194770.250932,
+    "seen": 1794194820.3240845,
+    "ast_hash": "95941e611f07c3e31926edd870fff316",
     "semantic_hash": ""
   },
   "src/hooks/useBackNavigation.ts": {
